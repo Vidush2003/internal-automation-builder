@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: theme('colors.background');
+  color: theme('colors.on-background');
+  font-family: 'Inter', sans-serif;
+}
+
+.ghost-border {
+  border: 1px solid theme('colors.outline-variant');
+  opacity: 0.15;
+}
+
+.glass-panel {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, theme('colors.primary') 0%, theme('colors.primary-container') 100%);
+  color: theme('colors.on-primary');
+}
+
+.pulse-dot {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.2); }
+}
+
+/* React Flow customizations for Alexandria Light Theme */
+.react-flow__node {
+  background: theme('colors.surface') !important;
+  border-radius: theme('borderRadius.xl') !important;
+}
+
+.react-flow__handle {
+  width: 10px !important;
+  height: 10px !important;
+  background: #ffffff !important;
+  border: 2px solid theme('colors.primary') !important;
+  border-radius: 50% !important;
+}
+
+.react-flow__edge-path {
+  stroke: theme('colors.outline') !important;
+  stroke-width: 2 !important;
+}
+
+.react-flow__controls {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+  border: 1px solid theme('colors.outline-variant') !important;
+}
