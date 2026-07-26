@@ -8,6 +8,15 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+button, a, input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: theme('colors.primary-fixed');
+  color: theme('colors.on-primary-fixed');
+}
+
 .ghost-border {
   border: 1px solid theme('colors.outline-variant');
   opacity: 0.15;
@@ -32,6 +41,15 @@ body {
   50% { opacity: .5; transform: scale(1.2); }
 }
 
+.animate-toast-in {
+  animation: toast-in 0.2s ease-out;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* React Flow customizations for Alexandria Light Theme */
 .react-flow__node {
   background: theme('colors.surface') !important;
@@ -54,4 +72,29 @@ body {
 .react-flow__controls {
   box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
   border: 1px solid theme('colors.outline-variant') !important;
+}
+
+/* Landing page hero: floating node cards + flowing connector lines */
+.hero-node {
+  animation: hero-float 6s ease-in-out infinite;
+}
+
+@keyframes hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-flow-line {
+  stroke-dasharray: 6 8;
+  animation: hero-dash 1.6s linear infinite;
+}
+
+@keyframes hero-dash {
+  to { stroke-dashoffset: -28; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-node, .hero-flow-line, .pulse-dot {
+    animation: none !important;
+  }
 }

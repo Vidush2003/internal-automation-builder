@@ -1,0 +1,9 @@
+import express from 'express';
+import { getDashboardAnalytics } from '../controllers/analyticsController.js';
+import { requireAuth } from '../middlewares/authMiddleware.js';
+
+const router = express.Router();
+
+router.get('/dashboard', requireAuth, getDashboardAnalytics);
+
+export default router;

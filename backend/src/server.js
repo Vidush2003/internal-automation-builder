@@ -1,10 +1,12 @@
 // src/server.js
 
+import http from 'http';
 import mongoose from 'mongoose';
 import app from './app.js';
 import { ENV } from './config/env.js';
 import { connectRedis, disconnectRedis } from './config/redis.js';
 import { startWorker } from './workflow-engine/worker.js';
+import { initSocket } from './services/socketService.js';
 
 const startServer = async () => {
   try {
@@ -13,7 +15,10 @@ const startServer = async () => {
     await connectRedis();
     startWorker();
 
-    app.listen(ENV.PORT, () => {
+    const server = http.createServer(app);
+    initSocket(server);
+
+    server.listen(ENV.PORT, () => {
       console.log(
         `[server] running on port ${ENV.PORT} in ${ENV.NODE_ENV} mode`
       );

@@ -1,151 +1,312 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppLayout from '../components/AppLayout';
 import { apiClient } from '../api/client';
+import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import { getSocket } from '../services/socket';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
+/* ─── Helpers ─────────────────────────────────── */
+const Icon = ({ children, className = '' }) => (
+  <span className={`material-symbols-outlined ${className}`} aria-hidden="true">{children}</span>
+);
+
+function formatRelativeTime(dateInput) {
+  const date = new Date(dateInput);
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'just now';
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr < 24) return `${diffHr}h ago`;
+  return `${Math.floor(diffHr / 24)}d ago`;
+}
+
+/* ─── Skeleton ─────────────────────────────────── */
+function Skeleton({ className = '' }) {
+  return <div className={`animate-pulse rounded-2xl bg-surface-container-high ${className}`} />;
+}
+
+/* ─── Stat Card ────────────────────────────────── */
+function StatCard({ label, value, icon, primary, footer, delay = 0 }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
+      className="relative overflow-hidden bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 p-6"
+    >
+      <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-primary/5 pointer-events-none" />
+      <div className="flex items-start justify-between mb-6">
+        <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-on-surface-variant">{label}</p>
+        <span className={`w-9 h-9 rounded-xl flex items-center justify-center ${primary ? 'bg-primary/10 text-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+          <Icon className="text-[20px]">{icon}</Icon>
+        </span>
+      </div>
+      <div className={`font-headline text-4xl font-bold ${primary ? 'text-primary' : 'text-on-background'}`}>{value}</div>
+      {footer && <div className="mt-4 flex items-center gap-1.5 text-xs text-on-surface-variant font-label">{footer}</div>}
+    </motion.div>
+  );
+}
+
+/* ─── Activity Log Item ────────────────────────── */
+function ActivityItem({ log, delay = 0 }) {
+  const success = log.status === 'success' || log.status === 'completed';
+  const actionName = log.action || log.status;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 10 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 hover:border-primary/20 hover:shadow-sm transition-all p-4"
+    >
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <span className="font-label text-[9px] uppercase tracking-widest px-2 py-1 bg-secondary-container text-on-secondary-container rounded-lg font-bold">
+          {actionName}
+        </span>
+        <span className="text-[10px] text-on-surface-variant font-label shrink-0">{formatRelativeTime(log.createdAt || new Date())}</span>
+      </div>
+      <p className="font-body text-sm font-semibold text-on-background truncate mb-3" title={log.message || `Execution ${log.executionId}`}>{log.message || `Execution ${log.executionId}`}</p>
+      <span className={`inline-flex items-center gap-1 text-xs font-semibold ${success ? 'text-primary' : 'text-error'}`}>
+        <Icon className="text-[15px]">{success ? 'check_circle' : 'warning'}</Icon>
+        {success ? 'Success' : 'Failed'}
+      </span>
+    </motion.div>
+  );
+}
+
+/* ─── Quick Actions ────────────────────────────── */
+function QuickActions({ onNewWorkflow }) {
+  const navigate = useNavigate();
+  const actions = [
+    { icon: 'add', label: 'New Workflow', desc: 'Start building', onClick: onNewWorkflow, primary: true },
+    { icon: 'account_tree', label: 'All Workflows', desc: 'View & manage', onClick: () => navigate('/workflows') },
+    { icon: 'receipt_long', label: 'Action Logs', desc: 'Inspect runs', onClick: () => navigate('/logs') },
+  ];
+  return (
+    <div className="grid grid-cols-3 sm:grid-cols-3 gap-3">
+      {actions.map(({ icon, label, desc, onClick, primary }, i) => (
+        <motion.button
+          key={label}
+          onClick={onClick}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, delay: 0.3 + i * 0.06 }}
+          className={`flex flex-col items-center justify-center gap-2 p-4 sm:p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-center ${
+            primary
+              ? 'bg-primary/10 border-primary/20 hover:bg-primary/15 text-primary'
+              : 'bg-surface-container-lowest border-outline-variant/10 hover:border-primary/20 text-on-surface-variant hover:text-on-background'
+          }`}
+        >
+          <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${primary ? 'bg-primary/15 text-primary' : 'bg-surface-container-high text-on-surface-variant'}`}>
+            <Icon className="text-[22px]">{icon}</Icon>
+          </span>
+          <span className="font-label text-xs font-bold uppercase tracking-wide">{label}</span>
+          <span className="text-[10px] text-on-surface-variant">{desc}</span>
+        </motion.button>
+      ))}
+    </div>
+  );
+}
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-surface-container-high px-4 py-3 rounded-xl border border-outline-variant/20 shadow-lg">
+        <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">{label}</p>
+        {payload.map((entry, index) => (
+          <p key={index} className="font-body text-sm font-bold" style={{ color: entry.color }}>
+            {entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
+/* ─── Dashboard ────────────────────────────────── */
 export default function Dashboard() {
-  const [workflows, setWorkflows] = useState([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [analytics, setAnalytics] = useState(null);
+  const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadData();
+
+    // Setup real-time socket
+    const socket = getSocket();
+    
+    // We can listen to globally emitted execution events if we want, or join an org room.
+    // For now, we'll refetch on execution completion to keep chart accurate.
+    const handleExecutionUpdate = (data) => {
+      if (data.status === 'completed' || data.status === 'failed') {
+        loadData(false); // background refresh
+      }
+    };
+
+    socket.on('execution:completed', handleExecutionUpdate);
+    socket.on('execution:failed', handleExecutionUpdate);
+
+    return () => {
+      socket.off('execution:completed', handleExecutionUpdate);
+      socket.off('execution:failed', handleExecutionUpdate);
+    };
   }, []);
 
-  const loadData = async () => {
+  const loadData = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
-      const data = await apiClient('/workflows');
-      setWorkflows(data.workflows || []);
+      const [analyticsData, logData] = await Promise.all([
+        apiClient('/analytics/dashboard'),
+        apiClient('/logs?limit=5').catch(() => ({ logs: [] })),
+      ]);
+      setAnalytics(analyticsData);
+      setLogs(logData.logs || []);
+      if (showLoading) setError('');
     } catch (err) {
-      console.error('Failed to load dashboard:', err);
+      if (showLoading) setError(err.message || 'Failed to load dashboard data.');
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
-  const activeWorkflowsCount = workflows.filter(w => w.status === 'active').length;
+  const handleCreateWorkflow = async () => {
+    try {
+      const newWf = await apiClient('/workflows', {
+        method: 'POST',
+        body: JSON.stringify({ name: `New Workflow ${Date.now()}`, description: 'Auto-generated workflow' }),
+      });
+      navigate(`/editor/${newWf.workflow._id}`);
+    } catch (err) {
+      setError('Failed to create workflow: ' + err.message);
+    }
+  };
+
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  const metrics = analytics?.metrics || {
+    totalWorkflows: 0, activeWorkflows: 0, totalExecutions: 0, successRate: 0
+  };
+
+  const chartData = analytics?.chartData || [];
 
   return (
-    <AppLayout title="Performance Overview" subtitle="A curated synthesis of your automation ecosystem. Monitoring execution fidelity and resource allocation across all active pipelines.">
-      {/* Bento Grid Metrics */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {/* Metric Card 1 */}
-        <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group border border-outline-variant/10 shadow-sm">
-          <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant group-hover:bg-primary transition-colors duration-500"></div>
-          <div className="flex justify-between items-start mb-8">
-            <h3 className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant font-bold">Total Workflows</h3>
-            <span className="material-symbols-outlined text-on-secondary-container">account_tree</span>
-          </div>
-          <div className="font-headline text-4xl font-bold text-on-background">{workflows.length}</div>
-          <div className="mt-4 flex items-center gap-2 text-xs text-on-surface-variant font-label">
-            <span className="material-symbols-outlined text-xs text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
-            <span>All systems optimal</span>
-          </div>
+    <AppLayout title="Dashboard" subtitle="Monitor your automation health and recent activity in real-time.">
+      {error && (
+        <div className="p-4 bg-error/10 text-error text-sm rounded-xl flex items-center gap-2">
+          <Icon className="text-[18px]">error</Icon> {error}
         </div>
+      )}
 
-        {/* Metric Card 2 (Active) */}
-        <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group border border-primary/20 bg-primary-fixed/10 shadow-sm">
-          <div className="flex justify-between items-start mb-8">
-            <h3 className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant font-bold">Active Workflows</h3>
-            <span className="material-symbols-outlined text-primary pulse-dot" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
-          </div>
-          <div className="font-headline text-4xl font-bold text-primary">{activeWorkflowsCount}</div>
-          <div className="mt-4 flex items-center gap-2 text-xs text-on-surface-variant font-label">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary pulse-dot"></span>
-            <span>Currently running</span>
-          </div>
+      {/* Hero greeting */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="relative overflow-hidden rounded-2xl bg-primary px-6 sm:px-8 py-7 sm:py-8"
+      >
+        <div className="absolute -right-16 -top-20 w-64 h-64 rounded-full bg-white/10 blur-2xl pointer-events-none" />
+        <div className="absolute -left-8 -bottom-16 w-48 h-48 rounded-full bg-white/8 blur-2xl pointer-events-none" />
+        <div className="relative">
+          <p className="font-label text-[10px] uppercase tracking-[.18em] text-white/70 font-bold mb-1">Automation workspace</p>
+          <h2 className="font-headline text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            {greeting()}, {user?.name?.split(' ')[0] || 'there'}.
+          </h2>
+          <p className="mt-1.5 text-white/75 text-sm">
+            You have {metrics.totalWorkflows} workflow{metrics.totalWorkflows !== 1 ? 's' : ''} · {metrics.activeWorkflows} active.
+          </p>
         </div>
+      </motion.div>
 
-        {/* Metric Card 3 */}
-        <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group border border-outline-variant/10 shadow-sm">
-          <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant group-hover:bg-tertiary transition-colors duration-500"></div>
-          <div className="flex justify-between items-start mb-8">
-            <h3 className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant font-bold">Success Rate</h3>
-            <span className="material-symbols-outlined text-on-secondary-container">check_circle</span>
-          </div>
-          <div className="font-headline text-4xl font-bold text-on-background">99.8%</div>
-          <div className="mt-4 flex items-center gap-2 text-xs text-on-surface-variant font-label">
-            <span className="material-symbols-outlined text-xs text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>trending_flat</span>
-            <span>Stable vs last week</span>
-          </div>
-        </div>
-
-        {/* Metric Card 4 */}
-        <div className="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between relative overflow-hidden group border border-outline-variant/10 shadow-sm">
-          <div className="absolute top-0 left-0 w-full h-1 bg-surface-variant group-hover:bg-outline transition-colors duration-500"></div>
-          <div className="flex justify-between items-start mb-8">
-            <h3 className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant font-bold">Credits Used</h3>
-            <span className="material-symbols-outlined text-on-secondary-container">database</span>
-          </div>
-          <div className="font-headline text-4xl font-bold text-on-background">68%</div>
-          <div className="mt-4 flex items-center gap-2 text-xs text-on-surface-variant font-label w-full">
-            <div className="w-full bg-surface-variant h-1 rounded-full overflow-hidden">
-              <div className="bg-tertiary h-full w-[68%] rounded-full"></div>
-            </div>
-          </div>
-        </div>
+      {/* Quick Actions */}
+      <section>
+        <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-on-surface-variant mb-3">Quick actions</p>
+        <QuickActions onNewWorkflow={handleCreateWorkflow} />
       </section>
 
-      {/* Complex Layout: Chart & Activity List */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-        {/* Chart Area (2/3 width) */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          <div className="flex justify-between items-end border-b border-outline-variant/15 pb-4">
-            <h3 className="font-headline text-2xl font-bold text-on-background">Execution Volume</h3>
-            <div className="font-label uppercase tracking-widest text-xs text-on-surface-variant">Last 7 Days</div>
+      {/* Stat Cards */}
+      <section>
+        <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-on-surface-variant mb-3">Real-Time Overview</p>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-36" />)}
           </div>
-          <div className="bg-surface-container-lowest rounded-xl p-8 h-96 relative flex items-end justify-between px-12 group border border-outline-variant/10 shadow-sm">
-            {/* Faux Chart Lines */}
-            <div className="absolute inset-0 flex flex-col justify-between py-12 pointer-events-none z-0">
-              <div className="w-full h-px bg-outline-variant/10"></div>
-              <div className="w-full h-px bg-outline-variant/10"></div>
-              <div className="w-full h-px bg-outline-variant/10"></div>
-              <div className="w-full h-px bg-outline-variant/10"></div>
-              <div className="w-full h-px bg-outline-variant/30"></div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatCard label="Total Workflows" value={metrics.totalWorkflows} icon="account_tree" delay={0} footer={<span>Across all statuses</span>} />
+            <StatCard label="Active Workflows" value={metrics.activeWorkflows} icon="bolt" primary delay={0.06} footer={<><span className={`w-1.5 h-1.5 rounded-full ${metrics.activeWorkflows > 0 ? 'bg-primary' : 'bg-outline-variant'}`} /><span>Currently running</span></>} />
+            <StatCard label="Total Runs" value={metrics.totalExecutions} icon="history" delay={0.12} footer={<span>Total executions over time</span>} />
+            <StatCard label="Success Rate" value={`${metrics.successRate}%`} icon="check_circle" delay={0.18} footer={<span>Based on all runs</span>} />
+          </div>
+        )}
+      </section>
+
+      {/* Chart + Activity */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Execution Volume Chart */}
+        <div className="lg:col-span-2">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-on-surface-variant">Execution Volume</p>
+              <h3 className="font-headline text-xl font-bold text-on-background mt-0.5">Last 7 Days</h3>
             </div>
-            {/* Chart Bars */}
-            <div className="relative z-10 w-4 h-32 bg-primary/20 rounded-t-sm hover:bg-primary transition-colors cursor-pointer"></div>
-            <div className="relative z-10 w-4 h-48 bg-primary/40 rounded-t-sm hover:bg-primary transition-colors cursor-pointer"></div>
-            <div className="relative z-10 w-4 h-64 bg-primary/60 rounded-t-sm hover:bg-primary transition-colors cursor-pointer"></div>
-            <div className="relative z-10 w-4 h-56 bg-primary/50 rounded-t-sm hover:bg-primary transition-colors cursor-pointer"></div>
-            <div className="relative z-10 w-4 h-80 bg-primary rounded-t-sm shadow-[0_0_15px_rgba(9,76,178,0.3)]"></div>
-            <div className="relative z-10 w-4 h-24 bg-primary/20 rounded-t-sm hover:bg-primary transition-colors cursor-pointer"></div>
-            <div className="relative z-10 w-4 h-16 bg-primary/10 rounded-t-sm hover:bg-primary transition-colors cursor-pointer"></div>
+          </div>
+          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm p-6 h-64 sm:h-80">
+            {loading ? (
+              <Skeleton className="h-full w-full" />
+            ) : chartData.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center text-on-surface-variant gap-3">
+                <Icon className="text-4xl opacity-40">bar_chart</Icon>
+                <p className="text-sm">No executions yet. Run a workflow to see activity here.</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="_id" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8f9bb3' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#8f9bb3' }} />
+                  <Tooltip cursor={{ fill: 'rgba(9, 76, 178, 0.05)' }} content={<CustomTooltip />} />
+                  <Bar dataKey="success" name="Successful" stackId="a" fill="#094cb2" radius={[0, 0, 4, 4]} />
+                  <Bar dataKey="failed" name="Failed" stackId="a" fill="#d32f2f" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
         {/* Activity Log */}
-        <div className="lg:col-span-1 flex flex-col gap-6">
-          <div className="flex justify-between items-end border-b border-outline-variant/15 pb-4">
-            <h3 className="font-headline text-2xl font-bold text-on-background">Activity Log</h3>
-            <span className="font-label uppercase tracking-widest text-[10px] text-on-surface-variant font-bold">Realtime</span>
+        <div className="lg:col-span-1">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-on-surface-variant">Activity</p>
+              <h3 className="font-headline text-xl font-bold text-on-background mt-0.5">Recent Runs</h3>
+            </div>
+            <button onClick={() => navigate('/logs')} className="text-[10px] font-bold uppercase tracking-wide text-primary font-label hover:underline">
+              View all
+            </button>
           </div>
-          <div className="flex flex-col gap-4">
-            <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 hover:bg-surface-variant transition-colors cursor-default shadow-sm">
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-label uppercase tracking-widest text-[9px] px-2 py-1 bg-secondary-container text-on-secondary-container rounded-sm font-semibold">Webhook Ingestion</span>
-                <span className="text-[10px] text-on-surface-variant font-label font-bold">2m ago</span>
+          <div className="flex flex-col gap-3">
+            {loading ? (
+              <>{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24" />)}</>
+            ) : logs.length === 0 ? (
+              <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10 text-sm text-on-surface-variant text-center">
+                No activity yet.
               </div>
-              <h4 className="font-headline font-semibold text-on-background mb-3">Sync CRM to Warehouse</h4>
-              <div className="flex justify-between items-center text-xs font-semibold">
-                <span className="flex items-center gap-1 text-tertiary">
-                  <span className="material-symbols-outlined text-[15px]">check_circle</span> Success
-                </span>
-                <span className="text-on-surface-variant font-mono text-[10px]">4.2s</span>
-              </div>
-            </div>
-
-            <div className="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/10 hover:bg-surface-variant transition-colors cursor-default shadow-sm">
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-label uppercase tracking-widest text-[9px] px-2 py-1 bg-secondary-container text-on-secondary-container rounded-sm font-semibold">Email Dispatch</span>
-                <span className="text-[10px] text-on-surface-variant font-label font-bold">15m ago</span>
-              </div>
-              <h4 className="font-headline font-semibold text-on-background mb-3">Weekly Report Dispatch</h4>
-              <div className="flex justify-between items-center text-xs font-semibold">
-                <span className="flex items-center gap-1 text-error">
-                  <span className="material-symbols-outlined text-[15px]">warning</span> Failed
-                </span>
-                <span className="text-on-surface-variant font-mono text-[10px]">30s</span>
-              </div>
-            </div>
+            ) : (
+              logs.slice(0, 5).map((log, i) => (
+                <ActivityItem key={log._id} log={log} delay={i * 0.05} />
+              ))
+            )}
           </div>
         </div>
       </section>

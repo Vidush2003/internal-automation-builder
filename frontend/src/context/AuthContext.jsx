@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Logout error:', err);
     } finally {
       setUser(null);
-      navigate('/login');
+      navigate('/');
     }
   };
 

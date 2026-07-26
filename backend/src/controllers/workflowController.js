@@ -3,6 +3,7 @@ import WorkflowExecution from '../models/WorkflowExecution.js';
 import { asyncHandler } from '../middlewares/asyncHandler.js';
 import ApiError from '../utils/ApiError.js';
 import { workflowQueue } from '../workflow-engine/queue.js';
+import { syncWorkflowCron } from '../workflow-engine/cronManager.js';
 
 export const createWorkflow = asyncHandler(async (req, res) => {
   const { name, description, triggerType, nodes, edges } = req.body;
@@ -16,6 +17,7 @@ export const createWorkflow = asyncHandler(async (req, res) => {
     createdBy: req.session.userId,
     orgId: req.session.orgId
   });
+  await syncWorkflowCron(workflow);
 
   res.status(201).json({ success: true, workflow });
 });
@@ -52,7 +54,8 @@ export const updateWorkflow = asyncHandler(async (req, res) => {
   );
   
   if (!workflow) throw new ApiError(404, 'Workflow not found');
-  
+    await syncWorkflowCron(workflow);
+
   res.status(200).json({ success: true, workflow });
 });
 
@@ -63,7 +66,8 @@ export const deleteWorkflow = asyncHandler(async (req, res) => {
     
   const workflow = await Workflow.findOneAndDelete(query);
   if (!workflow) throw new ApiError(404, 'Workflow not found');
-  
+    await syncWorkflowCron({ ...workflow.toObject(), status: 'archived' }); // Force remove cron
+
   res.status(200).json({ success: true, message: 'Workflow deleted' });
 });
 

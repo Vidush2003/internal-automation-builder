@@ -1,4 +1,5 @@
 import dns from 'dns/promises';
+import { interpolateString, interpolateObject } from '../../utils/interpolation.js';
 
 const isInternalIP = (ip) => {
   if (ip === '::1') return true;
@@ -14,7 +15,10 @@ const isInternalIP = (ip) => {
 };
 
 export const execute = async (node, ctx) => {
-  const { url, method = 'GET', headers = {}, body } = node.data;
+  const method = node.data.method || 'GET';
+  const url = interpolateString(node.data.url, ctx);
+  const headers = interpolateObject(node.data.headers || {}, ctx);
+  const body = interpolateObject(node.data.body, ctx);
   
   if (!url) {
     throw new Error('HTTP Action requires a valid URL');

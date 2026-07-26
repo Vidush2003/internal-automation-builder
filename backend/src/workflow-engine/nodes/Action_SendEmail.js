@@ -1,9 +1,12 @@
 import nodemailer from 'nodemailer';
 import { logSystemAction } from '../../utils/logger.js';
+import { interpolateString } from '../../utils/interpolation.js';
 
 export const execute = async (node, ctx) => {
-  const { to, subject, body } = node.data;
-  const executionId = ctx.executionId; // Assuming passed in ctx or we extract it
+  const to = interpolateString(node.data.to, ctx);
+  const subject = interpolateString(node.data.subject, ctx);
+  const body = interpolateString(node.data.body, ctx);
+  const executionId = ctx.executionId;
   
   try {
     // Generate test SMTP service account from ethereal.email

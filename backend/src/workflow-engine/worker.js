@@ -1,13 +1,25 @@
 import { Worker } from 'bullmq';
 import { ENV } from '../config/env.js';
 import Workflow from '../models/Workflow.js';
+import WorkflowExecution from '../models/WorkflowExecution.js';
 import { executeWorkflow } from './engine.js';
 import { QUEUES, WORKER_OPTIONS } from '../constants/queue.js';
 
 export const startWorker = () => {
   const worker = new Worker(QUEUES.WORKFLOW, async (job) => {
-    const { executionId, workflowId, payload, userId, orgId } = job.data;
+    let { executionId, workflowId, payload, userId, orgId } = job.data;
     
+    // For cron jobs, executionId won't be passed in since it's scheduled ahead of time
+    if (!executionId && job.name === 'execute-workflow-cron') {
+      const execution = await WorkflowExecution.create({
+        workflowId,
+        triggeredBy: null, // cron
+        status: 'pending',
+        logs: []
+      });
+      executionId = execution._id.toString();
+    }
+
     console.log(`[Worker] Processing Job ${job.id} for Execution ${executionId}`);
     const workflow = await Workflow.findById(workflowId);
     
@@ -15,7 +27,7 @@ export const startWorker = () => {
       throw new Error('Workflow not found in DB');
     }
     
-    await executeWorkflow(executionId, workflow, payload, { userId, orgId });
+    await executeWorkflow(executionId, workflow, payload || {}, { userId, orgId });
     
   }, {
     connection: { url: ENV.REDIS_URL },

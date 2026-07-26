@@ -11,6 +11,7 @@ import { redisClient } from './config/redis.js';
 import authRoutes from './routes/authRoutes.js';
 import ApiError from './utils/ApiError.js';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler.js';
+import { setupSwagger } from './config/swagger.js';
 
 const app = express();
 
@@ -74,10 +75,19 @@ app.get('/health', (req, res) => {
 
 import workflowRoutes from './routes/workflowRoutes.js';
 import logRoutes from './routes/logRoutes.js';
+import webhookRoutes from './routes/webhookRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+
+// Setup Swagger API Documentation
+setupSwagger(app);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/workflows', workflowRoutes);
 app.use('/api/logs', logRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/analytics', analyticsRoutes);
 app.use((req, res, next) => {
   next(new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`));
 });
