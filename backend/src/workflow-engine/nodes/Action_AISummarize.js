@@ -19,13 +19,23 @@ export const execute = async (node, ctx) => {
     
     // Fallback context mock if running outside of engine (e.g. unit tests)
     if (ctx && ctx.executionId) {
-      logSystemAction(ctx.executionId, `AI Summarize generated a ${length} summary (${summary.length} chars).`, 'success');
+      logSystemAction({
+        action: 'ACTION_AI_SUMMARIZE',
+        status: 'success',
+        message: `AI Summarize generated a ${length} summary (${summary.length} chars).`,
+        metadata: { executionId: ctx.executionId, length: summary.length }
+      });
     }
     
     return { summary };
   } catch (err) {
     if (ctx && ctx.executionId) {
-      logSystemAction(ctx.executionId, `AI Summarize failed: ${err.message}`, 'error');
+      logSystemAction({
+        action: 'ACTION_AI_SUMMARIZE',
+        status: 'error',
+        message: `AI Summarize failed: ${err.message}`,
+        metadata: { executionId: ctx.executionId, error: err.message }
+      });
     }
     throw err;
   }

@@ -27,13 +27,23 @@ ${text}`;
     const extractedData = await generateStructured(prompt, null, systemInstruction);
     
     if (ctx && ctx.executionId) {
-      logSystemAction(ctx.executionId, `AI Extract successfully pulled structured data.`, 'success');
+      logSystemAction({
+        action: 'ACTION_AI_EXTRACT',
+        status: 'success',
+        message: 'AI Extract successfully pulled structured data.',
+        metadata: { executionId: ctx.executionId, result: extractedData }
+      });
     }
     
-    return { data: extractedData };
+    return typeof extractedData === 'object' && extractedData !== null ? extractedData : { data: extractedData };
   } catch (err) {
     if (ctx && ctx.executionId) {
-      logSystemAction(ctx.executionId, `AI Extract failed: ${err.message}`, 'error');
+      logSystemAction({
+        action: 'ACTION_AI_EXTRACT',
+        status: 'error',
+        message: `AI Extract failed: ${err.message}`,
+        metadata: { executionId: ctx.executionId, error: err.message }
+      });
     }
     throw err;
   }

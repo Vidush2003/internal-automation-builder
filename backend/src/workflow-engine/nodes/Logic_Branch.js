@@ -8,7 +8,7 @@ export const execute = async (node, ctx) => {
   }
 
   // 1. Safely interpolate {{...}} tags into valid JavaScript literal strings/numbers
-  let interpolatedCondition = condition.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (match, path) => {
+  let interpolatedCondition = condition.replace(/\{\{\s*([\w.-]+)\s*\}\}/g, (match, path) => {
     const parts = path.split('.');
     let current = null;
 

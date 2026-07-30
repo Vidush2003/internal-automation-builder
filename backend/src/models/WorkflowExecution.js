@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const logSchema = new mongoose.Schema({
   nodeId: { type: String, default: 'SYSTEM' },
-  status: { type: String, enum: ['pending', 'running', 'success', 'failed'], default: 'pending' },
+  status: { type: String, enum: ['pending', 'running', 'success', 'failed', 'skipped'], default: 'pending' },
   startedAt: { type: Date },
   completedAt: { type: Date },
   error: { type: String },

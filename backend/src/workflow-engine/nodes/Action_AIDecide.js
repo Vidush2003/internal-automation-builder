@@ -27,13 +27,23 @@ ${text}`;
     const result = await generateStructured(prompt, null, systemInstruction);
     
     if (ctx && ctx.executionId) {
-      logSystemAction(ctx.executionId, `AI Decision: ${result.decision} (Reason: ${result.reasoning})`, 'success');
+      logSystemAction({
+        action: 'ACTION_AI_DECIDE',
+        status: 'success',
+        message: `AI Decision: ${result.decision} (Reason: ${result.reasoning})`,
+        metadata: { executionId: ctx.executionId, result }
+      });
     }
     
     return result;
   } catch (err) {
     if (ctx && ctx.executionId) {
-      logSystemAction(ctx.executionId, `AI Decide failed: ${err.message}`, 'error');
+      logSystemAction({
+        action: 'ACTION_AI_DECIDE',
+        status: 'error',
+        message: `AI Decide failed: ${err.message}`,
+        metadata: { executionId: ctx.executionId, error: err.message }
+      });
     }
     throw err;
   }
