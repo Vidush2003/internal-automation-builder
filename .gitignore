@@ -20,3 +20,5 @@ landing/
 landing.zip
 register.js
 .agents/
+backend/list-users.js
+backend/reset-passwords.js
