@@ -99,3 +99,30 @@ The workflow engine will process DAGs (Directed Acyclic Graphs).
 - Build dynamic forms rendering engine for the internal app builder.
 - Create the Analytics Dashboard and Execution Logs UI.
 - Implement Real-Time notifications via Socket.IO for approvals and failures.
+
+## 6. Monorepo Folder Structure
+
+```text
+internal-automation-builder/
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components (Dashboard, Workflow Canvas)
+│   │   ├── pages/           # Route views
+│   │   ├── store/           # Zustand global state
+│   │   ├── services/        # API calls (Axios/React Query)
+│   │   └── App.jsx
+│   └── package.json
+├── backend/
+│   ├── src/
+│   │   ├── config/          # Environment & connection setups
+│   │   ├── controllers/     # Route logic (authController, workflowController)
+│   │   ├── middlewares/     # Auth, RBAC, error handling
+│   │   ├── models/          # Mongoose DB schemas
+│   │   ├── routes/          # Express route definitions
+│   │   ├── app.js           # Express app setup
+│   │   └── server.js        # Entry point
+│   └── package.json
+├── docs/                    # Architecture plans, guides
+├── CHANGELOG.md             # Development logs
+└── docker-compose.yml       # Local infrastructure setup
+```

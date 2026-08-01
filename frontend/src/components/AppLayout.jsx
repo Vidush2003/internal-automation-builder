@@ -1,14 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { apiClient } from '../api/client';
 import { useToast } from './Overlays';
 import { AnimatePresence, motion } from 'framer-motion';
 
-/* ─── Icon helper ─────────────────────────────── */
 const Icon = ({ children, className = '' }) => (
   <span className={`material-symbols-outlined ${className}`} aria-hidden="true">{children}</span>
 );
+
+/* ─── Dark Mode Toggle ────────────────────────── */
+function DarkToggle() {
+  const { theme, toggle } = useTheme();
+  const isDark = theme === 'dark';
+  return (
+    <button
+      onClick={toggle}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-surface-container-highest dark:hover:bg-white/10 text-on-surface-variant dark:text-white/60"
+      aria-label="Toggle theme"
+    >
+      <Icon className="text-[20px]">{isDark ? 'light_mode' : 'dark_mode'}</Icon>
+    </button>
+  );
+}
 
 /* ─── Nav Item ─────────────────────────────────── */
 function NavItem({ icon, label, active, onClick, collapsed }) {
@@ -114,7 +130,7 @@ function AppSidebar({ onCreateWorkflow, extra }) {
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-60 shrink-0 h-screen sticky top-0 bg-surface-container-low border-r border-outline-variant/10 overflow-y-auto">
+    <aside className="hidden md:flex flex-col w-60 shrink-0 h-screen sticky top-0 bg-surface-container-low dark:bg-[#13151a] border-r border-outline-variant/10 dark:border-white/10 overflow-y-auto">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-outline-variant/10">
         <span className="w-8 h-8 rounded-xl bg-primary text-on-primary flex items-center justify-center font-headline font-bold shadow-sm">A</span>
@@ -143,7 +159,7 @@ function AppSidebar({ onCreateWorkflow, extra }) {
 
       {/* Create Workflow CTA */}
       {onCreateWorkflow && (
-        <div className="px-3 pb-4 border-t border-outline-variant/10 pt-4">
+        <div className="px-3 pb-4 border-t border-outline-variant/10 dark:border-white/10 pt-4">
           <button
             onClick={onCreateWorkflow}
             className="btn-primary w-full py-3 rounded-xl font-label text-[11px] font-bold uppercase tracking-widest shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0 transition-all flex justify-center items-center gap-2"
@@ -153,6 +169,11 @@ function AppSidebar({ onCreateWorkflow, extra }) {
           </button>
         </div>
       )}
+      {/* Theme toggle at bottom of sidebar */}
+      <div className="px-4 pb-5 flex items-center gap-2">
+        <DarkToggle />
+        <span className="text-[10px] text-on-surface-variant dark:text-white/30 font-mono uppercase tracking-widest">Theme</span>
+      </div>
     </aside>
   );
 }
@@ -255,7 +276,7 @@ export default function AppLayout({ children, title, subtitle, extra }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background font-body text-on-background">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-[#0a0a0f] font-body text-on-background dark:text-white transition-colors duration-200">
       {/* Desktop Sidebar */}
       <AppSidebar onCreateWorkflow={handleCreateWorkflow} extra={extra} />
 
@@ -269,7 +290,7 @@ export default function AppLayout({ children, title, subtitle, extra }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="bg-surface/90 backdrop-blur-md border-b border-outline-variant/10 flex items-center justify-between px-4 sm:px-6 py-3 sticky top-0 z-30 shrink-0">
+        <header className="bg-surface/90 dark:bg-[#13151a]/90 backdrop-blur-md border-b border-outline-variant/10 dark:border-white/10 flex items-center justify-between px-4 sm:px-6 py-3 sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileNavOpen(true)}
@@ -286,7 +307,10 @@ export default function AppLayout({ children, title, subtitle, extra }) {
             )}
           </div>
 
-          <ProfileDropdown user={user} onLogout={logout} />
+          <div className="flex items-center gap-2">
+            <DarkToggle />
+            <ProfileDropdown user={user} onLogout={logout} />
+          </div>
         </header>
 
         {/* Page content */}

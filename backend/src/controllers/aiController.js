@@ -20,7 +20,12 @@ export const generateWorkflow = asyncHandler(async (req, res) => {
           type: "object",
           properties: {
             id: { type: "string" },
-            type: { type: "string", enum: ["TRIGGER_MANUAL", "TRIGGER_WEBHOOK", "TRIGGER_CRON", "ACTION_HTTP", "ACTION_EMAIL", "LOGIC_BRANCH", "ACTION_AI_SUMMARIZE", "ACTION_AI_EXTRACT", "ACTION_AI_DECIDE"] },
+            type: { type: "string", enum: [
+              "TRIGGER_MANUAL", "TRIGGER_WEBHOOK", "TRIGGER_CRON",
+              "ACTION_HTTP", "ACTION_EMAIL", "ACTION_SLACK", "ACTION_DISCORD",
+              "LOGIC_BRANCH", "LOGIC_DELAY", "LOGIC_LOOP",
+              "ACTION_AI_SUMMARIZE", "ACTION_AI_EXTRACT", "ACTION_AI_DECIDE"
+            ] },
             data: { type: "object" },
             position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } }
           },
@@ -49,10 +54,14 @@ export const generateWorkflow = asyncHandler(async (req, res) => {
 Nodes can be of the following types:
 - TRIGGER_MANUAL: triggered manually.
 - TRIGGER_WEBHOOK: triggered via HTTP POST. Data is in \`{{trigger.payload.some_key}}\`.
-- TRIGGER_CRON: triggered on a schedule.
+- TRIGGER_CRON: triggered on a schedule. \`data: { cron: '* * * * *' }\`.
 - ACTION_HTTP: makes an HTTP request. \`data: { method: 'GET|POST', url: string, body: string, headers: string }\`. Output is usually JSON.
 - ACTION_EMAIL: sends an email. \`data: { to: string, subject: string, body: string }\`.
+- ACTION_SLACK: posts to Slack via webhook. \`data: { webhookUrl: string, message: string }\`.
+- ACTION_DISCORD: posts to Discord via webhook. \`data: { webhookUrl: string, message: string }\`.
 - LOGIC_BRANCH: evaluates a JS condition. \`data: { condition: string }\`. Has source handles "true" and "false".
+- LOGIC_DELAY: pauses execution. \`data: { duration: number, unit: 'seconds' }\`.
+- LOGIC_LOOP: iterates over an array. \`data: { arrayInput: string, itemVariableName: 'item' }\`. Has source handles "loop" (body) and "done" (after loop).
 - ACTION_AI_SUMMARIZE: \`data: { text: string, length: 'short|medium|long' }\`. Outputs \`summary\`.
 - ACTION_AI_EXTRACT: \`data: { text: string, extractionSchema: string }\`. Outputs \`data\`.
 - ACTION_AI_DECIDE: \`data: { text: string, criteria: string }\`. Outputs \`decision\` (boolean) and \`reasoning\`.
@@ -61,7 +70,8 @@ Important rules:
 1. Every workflow MUST start with exactly one TRIGGER node.
 2. Nodes must have unique \`id\` strings (e.g. 'node-1'). Edges connect them via \`source\` and \`target\`.
 3. If using LOGIC_BRANCH, specify \`sourceHandle: "true"\` or \`sourceHandle: "false"\` on the outgoing edge.
-4. Arrange positions nicely. e.g. x: 250, y increments by 150 for each step.`;
+4. If using LOGIC_LOOP, the body nodes connect from \`sourceHandle: "loop"\` and the post-loop node connects from \`sourceHandle: "done"\`.
+5. Arrange positions nicely. e.g. x: 250, y increments by 150 for each step.`;
 
   const result = await generateStructured(prompt, schema, systemInstruction);
 

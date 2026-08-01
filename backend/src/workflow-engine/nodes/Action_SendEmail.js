@@ -1,6 +1,7 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { logSystemAction } from '../../utils/logger.js';
 import { interpolateString } from '../../utils/interpolation.js';
+import { ENV } from '../../config/env.js';
 
 export const execute = async (node, ctx) => {
   const to = interpolateString(node.data.to, ctx);
@@ -9,37 +10,32 @@ export const execute = async (node, ctx) => {
   const executionId = ctx.executionId;
   
   try {
-    // Generate test SMTP service account from ethereal.email
-    const testAccount = await nodemailer.createTestAccount();
+    if (!ENV.RESEND_API_KEY) {
+      console.warn('[Action_SendEmail] RESEND_API_KEY is not set! Skipping email delivery.');
+      return { success: false, message: 'RESEND_API_KEY is not configured.' };
+    }
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
+    const resend = new Resend(ENV.RESEND_API_KEY);
 
-    const info = await transporter.sendMail({
-      from: '"automataX System" <no-reply-automataX@gmail.com>',
-      to: to,
+    const { data, error } = await resend.emails.send({
+      from: ENV.EMAIL_FROM_ADDRESS,
+      to: [to],
       subject: subject,
       text: body,
       html: `<p>${body}</p>`,
     });
 
-    const previewUrl = nodemailer.getTestMessageUrl(info);
+    if (error) {
+      throw new Error(error.message);
+    }
 
     await logSystemAction({
       action: 'SEND_EMAIL',
       status: 'success',
-      message: `Sent email to ${to}`,
+      message: `Sent email to ${to} via Resend`,
       metadata: {
         nodeId: node.id,
-        previewUrl: previewUrl,
-        messageId: info.messageId
+        resendId: data.id
       },
       triggeredBy: ctx.userId,
       orgId: ctx.orgId
@@ -47,8 +43,8 @@ export const execute = async (node, ctx) => {
 
     return { 
       success: true, 
-      message: 'Email sent successfully.', 
-      previewUrl: previewUrl 
+      message: 'Email sent successfully via Resend.', 
+      resendId: data.id 
     };
   } catch (error) {
     await logSystemAction({

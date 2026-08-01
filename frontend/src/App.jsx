@@ -8,6 +8,7 @@ import Logs from './pages/Logs';
 import Landing from './pages/Landing';
 import AppViewer from './pages/AppViewer';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { OverlayProvider } from './components/Overlays';
 import './index.css';
 
@@ -66,15 +67,17 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <OverlayProvider>
-        <div className="app-container">
-          <AppContent />
-        </div>
-        </OverlayProvider>
-      </AuthProvider>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AuthProvider>
+          <OverlayProvider>
+          <div className="app-container">
+            <AppContent />
+          </div>
+          </OverlayProvider>
+        </AuthProvider>
+      </Router>
+    </ThemeProvider>
   );
 }
 

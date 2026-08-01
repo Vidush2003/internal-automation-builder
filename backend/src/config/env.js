@@ -27,6 +27,9 @@ export const ENV = Object.freeze({
   REDIS_URL: required('REDIS_URL'),
   SESSION_SECRET: required('SESSION_SECRET'),
 
+  RESEND_API_KEY: process.env.RESEND_API_KEY?.trim() || null,
+  EMAIL_FROM_ADDRESS: process.env.EMAIL_FROM_ADDRESS?.trim() || 'no-reply-automataX <onboarding@resend.dev>',
+
   CLIENT_ORIGINS: parseOrigins(process.env.CLIENT_ORIGINS || process.env.CLIENT_URL),
 
   COOKIE_NAME: process.env.COOKIE_NAME?.trim() || 'automation.sid',

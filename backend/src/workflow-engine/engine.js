@@ -322,12 +322,14 @@ export const executeWorkflow = async (executionId, workflow, initialPayload, use
 
     execution.status      = 'completed';
     execution.completedAt = new Date();
+    execution.durationMs  = execution.completedAt - execution.startedAt;
     await execution.save();
     emitExecutionUpdate(executionId, 'execution:completed', { executionId, status: 'completed' });
     console.log(`[Engine] Execution ${executionId} completed successfully.`);
   } catch (error) {
     execution.status      = 'failed';
     execution.completedAt = new Date();
+    execution.durationMs  = execution.completedAt - execution.startedAt;
     await execution.save();
     emitExecutionUpdate(executionId, 'execution:failed', { executionId, error: error.message, status: 'failed' });
     console.log(`[Engine] Execution ${executionId} failed: ${error.message}`);

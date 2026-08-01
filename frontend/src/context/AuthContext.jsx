@@ -62,8 +62,8 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      setUser(null);
-      navigate('/');
+      navigate('/', { replace: true, state: {} });
+      setTimeout(() => setUser(null), 10);
     }
   };
 

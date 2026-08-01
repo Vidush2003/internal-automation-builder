@@ -2,22 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import AuthModal from '../components/AuthModal';
+import { useTheme } from '../context/ThemeContext';
 
-/* ─── Helpers ─────────────────────────────────────────────── */
-const Icon = ({ children, className = '' }) => (
-  <span className={`material-symbols-outlined ${className}`} aria-hidden="true">{children}</span>
-);
-
-/** Fade-in-up when element scrolls into view */
+/* ─── Animation helper ──────────────────────────────────────── */
 function FadeUp({ children, delay = 0, className = '' }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px 0px' });
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 22 }}
+      initial={{ opacity: 0, y: 28 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
@@ -25,323 +21,272 @@ function FadeUp({ children, delay = 0, className = '' }) {
   );
 }
 
-/* ─── Brand ─────────────────────────────────────────────────── */
-function Brand({ compact = false }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <span className="w-9 h-9 rounded-xl bg-primary text-on-primary flex items-center justify-center font-headline text-lg font-bold shadow-sm">A</span>
-      {!compact && (
-        <span className="font-headline text-xl font-bold tracking-tight text-on-background">
-          automata<span className="text-primary">X</span>
-        </span>
-      )}
-    </div>
-  );
-}
-
-/* ─── NavBar ─────────────────────────────────────────────────── */
-function NavBar({ onLogin, onRegister }) {
-  return (
-    <header className="sticky top-0 z-50 border-b border-outline-variant/10 bg-background/80 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between">
-        <a href="#top" aria-label="AutomataX home"><Brand /></a>
-        <nav className="hidden md:flex items-center gap-7 font-label text-[11px] font-semibold uppercase tracking-widest text-on-surface-variant">
-          <a href="#product" className="hover:text-primary transition-colors">Product</a>
-          <a href="#features" className="hover:text-primary transition-colors">Capabilities</a>
-          <a href="#how-it-works" className="hover:text-primary transition-colors">How it works</a>
-        </nav>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button onClick={onLogin} className="px-3 sm:px-4 py-2 text-sm font-semibold text-on-surface-variant hover:text-on-background transition-colors">Sign in</button>
-          <button onClick={onRegister} className="btn-primary px-4 sm:px-5 py-2.5 rounded-xl font-label text-xs font-bold tracking-wide shadow-sm hover:shadow-md hover:-translate-y-px active:translate-y-0 transition-all">Start building</button>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-/* ─── Workflow Preview (Hero graphic) ───────────────────────── */
-/** Node cards that float — must be absolutely positioned inside
- *  the parent container, NOT inside a plain motion.div wrapper. */
-function FloatingNodeCard({ icon, title, detail, style, tint, yAnim, duration }) {
+function SlideIn({ children, from = 'left', delay = 0, className = '' }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-80px 0px' });
+  const x = from === 'left' ? -40 : 40;
   return (
     <motion.div
-      style={{ position: 'absolute', ...style }}
-      animate={{ y: yAnim }}
-      transition={{ duration, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
+      ref={ref}
+      initial={{ opacity: 0, x }}
+      animate={inView ? { opacity: 1, x: 0 } : {}}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
     >
-      <div className={`rounded-2xl border border-outline-variant/20 bg-surface-container-lowest/95 backdrop-blur-sm p-3 shadow-lg w-44`}>
-        <div className="flex items-center gap-2.5">
-          <span className={`w-8 h-8 rounded-xl ${tint} flex items-center justify-center`}>
-            <Icon className="text-[17px] text-white">{icon}</Icon>
-          </span>
-          <div>
-            <p className="text-xs font-bold text-on-background leading-tight">{title}</p>
-            <p className="text-[10px] text-on-surface-variant mt-0.5">{detail}</p>
-          </div>
-        </div>
-      </div>
+      {children}
     </motion.div>
   );
 }
 
-function WorkflowPreview() {
+/* ─── Ticker ────────────────────────────────────────────────── */
+function AnalyticsTicker() {
+  const [stats, setStats] = useState({
+    totalWorkflows: '—',
+    totalExecutions: '—',
+    avgExecutionSeconds: '—',
+    successRate: '—',
+  });
+
+  useEffect(() => {
+    fetch('/api/analytics/public')
+      .then(r => r.json())
+      .then(d => {
+        if (!d.error) setStats({
+          totalWorkflows: d.totalWorkflows.toLocaleString(),
+          totalExecutions: d.totalExecutions.toLocaleString(),
+          avgExecutionSeconds: `${d.avgExecutionSeconds}s`,
+          successRate: `${d.successRate}%`,
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  const items = [
+    `⚡ Avg Execution: ${stats.avgExecutionSeconds}`,
+    `🔄 Total Executions: ${stats.totalExecutions}`,
+    `🛡️ Success Rate: ${stats.successRate}`,
+    `📋 Active Workflows: ${stats.totalWorkflows}`,
+    `⚡ Avg Execution: ${stats.avgExecutionSeconds}`,
+    `🔄 Total Executions: ${stats.totalExecutions}`,
+    `🛡️ Success Rate: ${stats.successRate}`,
+    `📋 Active Workflows: ${stats.totalWorkflows}`,
+  ];
+
   return (
-    <div className="relative mx-auto w-full max-w-[580px]" aria-label="A visual preview of the AutomataX workflow canvas">
-      {/* Glow */}
-      <div className="absolute inset-6 rounded-[28px] bg-primary/10 blur-3xl -z-10" />
-
-      {/* Mock browser window */}
-      <div className="rounded-[22px] bg-[#17233b] shadow-2xl overflow-hidden border border-white/10">
-        {/* Title bar */}
-        <div className="h-10 px-4 flex items-center justify-between border-b border-white/10 bg-[#1c2a45]">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#ff6b64]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f6c75d]" />
-            <span className="w-2.5 h-2.5 rounded-full bg-[#55cf8b]" />
-            <span className="ml-3 text-[10px] text-white/50 font-label tracking-wide">Vendor intake · Draft</span>
-          </div>
-          <span className="px-2.5 py-1 rounded-md bg-[#2b66d5] text-[9px] text-white font-bold tracking-wide">Publish</span>
-        </div>
-
-        {/* Canvas area */}
-        <div
-          className="relative overflow-hidden"
-          style={{
-            height: '340px',
-            backgroundImage: 'radial-gradient(rgba(255,255,255,.1) 1px, transparent 1px)',
-            backgroundSize: '22px 22px',
-          }}
-        >
-          {/* Connector SVG */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 580 340" fill="none" aria-hidden="true">
-            <path d="M145 100 C200 100, 195 168, 268 168" stroke="#7da5f3" strokeWidth="1.8" strokeDasharray="5 7" opacity="0.7" />
-            <path d="M365 168 C420 168, 415 252, 460 252" stroke="#7da5f3" strokeWidth="1.8" strokeDasharray="5 7" opacity="0.7" />
-            <circle cx="268" cy="168" r="4" fill="#91b0ef" opacity="0.9" />
-            <circle cx="460" cy="252" r="4" fill="#91b0ef" opacity="0.9" />
-          </svg>
-
-          {/* Floating node cards — absolutely positioned, NOT inside a wrapping div */}
-          <FloatingNodeCard
-            icon="bolt" title="New request" detail="Manual trigger"
-            tint="bg-[#273c65]"
-            style={{ top: '12%', left: '5%' }}
-            yAnim={[0, -7, 0]} duration={4}
-          />
-          <FloatingNodeCard
-            icon="http" title="Enrich record" detail="HTTP request"
-            tint="bg-[#234d9c]"
-            style={{ top: '37%', left: '34%' }}
-            yAnim={[0, 6, 0]} duration={4.5}
-          />
-          <FloatingNodeCard
-            icon="mail" title="Notify owner" detail="Send email"
-            tint="bg-[#375590]"
-            style={{ top: '58%', right: '5%' }}
-            yAnim={[0, -5, 0]} duration={3.8}
-          />
-
-          {/* Status bar at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 bg-[#223151]/95 border-t border-white/10 p-3 flex items-center gap-3">
-            <span className="w-7 h-7 rounded-lg bg-[#234f9f] text-white flex items-center justify-center shrink-0">
-              <Icon className="text-[15px]">check</Icon>
-            </span>
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold text-white">Workflow ready to run</p>
-              <p className="text-[9px] text-white/50 mt-0.5">3 connected steps · execution logging enabled</p>
-            </div>
-            <span className="ml-auto text-[9px] text-[#a7c2fb] font-bold tracking-widest">LIVE</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating stat card */}
-      <div className="absolute -right-4 sm:-right-8 top-8 rounded-2xl bg-surface-container-lowest border border-outline-variant/15 shadow-xl p-3 sm:p-4 w-36 sm:w-40">
-        <p className="font-label text-[9px] uppercase tracking-widest text-on-surface-variant">Last run</p>
-        <p className="font-headline text-lg sm:text-xl font-bold text-on-background mt-1">Success</p>
-        <div className="mt-2 h-1.5 rounded-full bg-primary/15 overflow-hidden">
-          <div className="h-full bg-primary rounded-full" style={{ width: '82%' }} />
-        </div>
-      </div>
+    <div className="bg-gray-950 overflow-hidden py-2">
+      <motion.div
+        animate={{ x: ['0%', '-50%'] }}
+        transition={{ ease: 'linear', duration: 35, repeat: Infinity }}
+        className="flex gap-16 w-max px-8"
+      >
+        {items.map((item, i) => (
+          <span key={i} className="text-[11px] font-mono font-semibold tracking-widest text-gray-400 uppercase whitespace-nowrap">
+            {item}
+          </span>
+        ))}
+      </motion.div>
     </div>
   );
 }
 
-/* ─── Hero ──────────────────────────────────────────────────── */
-function Hero({ onRegister, onLogin }) {
+/* ─── Navbar ──────────────────────────────────────────────── */
+function DarkToggle() {
+  const { theme, toggle } = useTheme();
+  const isDark = theme === 'dark';
   return (
-    <section id="top" className="relative overflow-hidden">
-      <div className="absolute -top-44 right-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 pt-16 sm:pt-24 pb-20 sm:pb-28 grid grid-cols-1 lg:grid-cols-[.95fr_1.05fr] gap-14 lg:gap-10 items-center relative">
-        <div className="max-w-xl">
+    <button
+      onClick={toggle}
+      title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 hover:text-gray-900 dark:text-white/50 dark:hover:text-white/80"
+      aria-label="Toggle theme"
+    >
+      <span className="material-symbols-outlined text-[20px]">{isDark ? 'light_mode' : 'dark_mode'}</span>
+    </button>
+  );
+}
+
+function NavBar({ onLogin, onRegister }) {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+
+  const links = [
+    { label: 'How it works', href: '#how-it-works' },
+    { label: 'Features', href: '#features' },
+    { label: 'Integrations', href: '#integrations' },
+    { label: 'Execution', href: '#execution' },
+  ];
+
+  return (
+    <header className={`sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'bg-white/90 dark:bg-[#0d0d14]/95 border-b border-gray-200 dark:border-white/10 shadow-sm dark:shadow-lg dark:shadow-black/30 backdrop-blur-xl' : 'bg-transparent'} py-4`}>
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 h-auto flex items-center justify-between gap-6">
+        {/* Logo */}
+        <a href="#top" className="shrink-0">
+          <img src="/logo/automataX.png" alt="automataX" className="h-7 w-auto object-contain dark:brightness-200" />
+        </a>
+
+        {/* Desktop nav */}
+        <nav className="hidden md:flex items-center gap-6">
+          {links.map(l => (
+            <a key={l.href} href={l.href} className="text-sm font-medium text-gray-500 dark:text-white/50 hover:text-gray-900 dark:hover:text-white transition-colors">
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        <div className="hidden md:flex items-center gap-2">
+          <DarkToggle />
+          <button onClick={onLogin} className="px-4 py-2 text-sm font-semibold text-gray-600 dark:text-white/60 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-all">
+            Log in
+          </button>
+          <button onClick={onRegister} className="px-5 py-2 rounded-lg text-white text-sm font-bold transition-all shadow-sm" style={{ background: 'linear-gradient(135deg,#ff4a00,#e04200)', boxShadow: '0 0 20px rgba(255,74,0,0.3)' }}>
+            Get started
+          </button>
+        </div>
+
+        <button className="md:hidden p-2 text-gray-600 dark:text-white/60" onClick={() => setMobileOpen(o => !o)}>
+          <span className="material-symbols-outlined">{mobileOpen ? 'close' : 'menu'}</span>
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden border-t border-gray-100 dark:border-white/10 bg-white dark:bg-[#0d0d14] overflow-hidden"
           >
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1.5 font-label text-[10px] font-bold uppercase tracking-[.16em]">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Internal automation, simplified
-            </span>
-            <h1 className="mt-6 font-headline text-[2.6rem] sm:text-5xl lg:text-[4rem] font-bold tracking-tight leading-[1.02] text-on-background">
-              Turn everyday operations into{' '}
-              <span className="text-primary">reliable flow.</span>
-            </h1>
-            <p className="mt-5 text-base sm:text-lg leading-relaxed text-on-surface-variant max-w-lg">
-              AutomataX gives your team one visual place to build, run, and understand the internal workflows that keep work moving.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button
-                onClick={onRegister}
-                className="btn-primary px-5 py-3.5 rounded-xl font-label text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-px active:translate-y-0 transition-all inline-flex items-center gap-2"
-              >
-                Build your first workflow
-                <Icon className="text-[18px]">arrow_forward</Icon>
-              </button>
-              <button
-                onClick={onLogin}
-                className="px-5 py-3.5 rounded-xl font-label text-sm font-semibold text-on-background border border-outline-variant/30 hover:bg-surface-container-low transition-colors"
-              >
-                Sign in to workspace
-              </button>
-            </div>
-            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-on-surface-variant">
-              <span className="flex items-center gap-1.5"><Icon className="text-primary text-[16px]">check_circle</Icon> Visual workflow canvas</span>
-              <span className="flex items-center gap-1.5"><Icon className="text-primary text-[16px]">check_circle</Icon> Execution logs included</span>
+            <div className="max-w-6xl mx-auto px-5 py-4 flex flex-col gap-3">
+              {links.map(l => (
+                <a key={l.href} href={l.href} onClick={() => setMobileOpen(false)} className="text-sm font-medium text-gray-700 dark:text-white/60 py-1 dark:hover:text-white">
+                  {l.label}
+                </a>
+              ))}
+              <div className="flex gap-3 mt-2 pt-3 border-t border-gray-100 dark:border-white/10">
+                <button onClick={onLogin} className="flex-1 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm font-semibold text-gray-700 dark:text-white/60">Log in</button>
+                <button onClick={onRegister} className="flex-1 py-2 rounded-lg text-white text-sm font-bold" style={{ background: '#ff4a00' }}>Get started</button>
+              </div>
             </div>
           </motion.div>
-        </div>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+/* ─── Hero ───────────────────────────────────────────────────── */
+function Hero({ onRegister }) {
+  return (
+    <section id="top" className="relative pt-36 pb-28 px-5 overflow-hidden bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
+      <div className="max-w-4xl mx-auto text-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.97, x: 16 }}
-          animate={{ opacity: 1, scale: 1, x: 0 }}
-          transition={{ duration: 0.65, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 dark:border-[#9d4edd]/30 bg-gray-50 dark:bg-[#9d4edd]/10 text-gray-500 dark:text-purple-400 text-xs font-semibold dark:font-bold mb-8"
         >
-          <WorkflowPreview />
+          <span className="w-2 h-2 rounded-full bg-green-500 dark:bg-[#9d4edd] dark:animate-pulse" />
+          Live platform · No credit card needed
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.07, ease: [0.16, 1, 0.3, 1] }}
+          className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight dark:tracking-tighter text-gray-950 dark:text-white leading-[1.05] mb-6"
+        >
+          Automate anything.<br />
+          <span className="text-[#ff4a00] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-br dark:from-[#9d4edd] dark:to-[#ff4a00]">Build visually.</span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.14, ease: [0.16, 1, 0.3, 1] }}
+          className="text-lg sm:text-xl text-gray-500 dark:text-white/50 leading-relaxed max-w-2xl mx-auto mb-10"
+        >
+          AutomataX is a visual automation IDE with a built-in AI generator, real-time execution logs, and first-class support for webhooks, AI models, and custom logic.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3"
+        >
+          <button
+            onClick={onRegister}
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#ff4a00] text-white font-bold text-base shadow-lg shadow-[#ff4a00]/25 hover:bg-[#e04200] hover:-translate-y-0.5 transition-all"
+          >
+            Start building free
+          </button>
+          <a
+            href="#how-it-works"
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-gray-200 text-gray-700 font-semibold text-base hover:border-gray-300 hover:bg-gray-50 transition-all text-center"
+          >
+            See how it works
+          </a>
+        </motion.div>
+
+        {/* Stats strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.32 }}
+          className="mt-16 flex flex-wrap items-center justify-center gap-x-12 gap-y-6"
+        >
+          {[
+            { n: '11+', label: 'Node types' },
+            { n: '3', label: 'Trigger modes' },
+            { n: 'AI', label: 'Workflow generation' },
+            { n: 'Live', label: 'Execution logs' },
+          ].map(s => (
+            <div key={s.label} className="text-center">
+              <p className="text-2xl font-black text-[#ff4a00]">{s.n}</p>
+              <p className="text-xs text-gray-400 dark:text-white/30 mt-1 font-medium">{s.label}</p>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>
   );
 }
 
-/* ─── Product Section ───────────────────────────────────────── */
-function ProductSection() {
-  const logs = [
-    ['Manual trigger received', 'Just now', 'bolt', true],
-    ['Vendor record enriched', 'Completed', 'http', false],
-    ['Owner notification delivered', 'Completed', 'mail', false],
-  ];
-  return (
-    <section id="product" className="border-y border-outline-variant/10 bg-surface-container-lowest">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-14 sm:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <FadeUp>
-          <div className="rounded-[24px] bg-[#10203d] p-5 sm:p-7 shadow-xl overflow-hidden">
-            <div className="flex items-center gap-2 text-white/55 font-label text-[10px] uppercase tracking-widest">
-              <span className="w-2 h-2 rounded-full bg-[#55cf8b]" /> Live workflow activity
-            </div>
-            <div className="mt-5 space-y-2.5">
-              {logs.map(([label, state, icon, highlight]) => (
-                <div key={label} className="flex items-center gap-3 rounded-xl bg-white/[.05] border border-white/[.07] p-3">
-                  <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-white ${highlight ? 'bg-[#2b66d5]' : 'bg-white/10'}`}>
-                    <Icon className="text-[16px]">{icon}</Icon>
-                  </span>
-                  <p className="text-xs text-white font-semibold flex-1">{label}</p>
-                  <span className="text-[10px] text-[#a7c2fb]">{state}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-5 grid grid-cols-3 gap-2">
-              <div className="h-14 rounded-lg bg-[#214b94]" />
-              <div className="h-9 self-end rounded-lg bg-[#294b86]" />
-              <div className="h-11 self-end rounded-lg bg-[#3764ad]" />
-            </div>
-          </div>
-        </FadeUp>
-        <FadeUp delay={0.15}>
-          <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-primary">Clarity by default</p>
-          <h2 className="mt-3 font-headline text-3xl sm:text-4xl font-bold tracking-tight text-on-background">
-            Know what ran, what changed, and what needs attention.
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-on-surface-variant">
-            Move from scattered manual hand-offs to an execution trail your team can actually follow. AutomataX keeps each workflow and its activity in one focused workspace.
-          </p>
-          <a href="#features" className="mt-7 inline-flex gap-2 items-center text-sm font-bold text-primary hover:gap-3 transition-all duration-200">
-            Explore the platform <Icon className="text-[18px]">arrow_forward</Icon>
-          </a>
-        </FadeUp>
-      </div>
-    </section>
-  );
-}
-
-/* ─── Features ──────────────────────────────────────────────── */
-function Capability({ icon, eyebrow, title, description, delay }) {
-  return (
-    <FadeUp delay={delay}>
-      <article className="h-full rounded-2xl border border-outline-variant/15 bg-surface-container-lowest p-6 sm:p-7 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-        <span className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-          <Icon className="text-[21px]">{icon}</Icon>
-        </span>
-        <p className="mt-5 font-label text-[10px] uppercase tracking-[.16em] text-primary font-bold">{eyebrow}</p>
-        <h3 className="mt-2 font-headline text-xl font-bold text-on-background">{title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{description}</p>
-      </article>
-    </FadeUp>
-  );
-}
-
-function Features() {
-  const items = [
-    ['account_tree', 'Design', 'Build visually', 'Connect triggers and actions on a canvas your team can reason about at a glance.'],
-    ['play_circle', 'Execute', 'Run with confidence', 'Queue workflow runs without holding up the rest of your application.'],
-    ['receipt_long', 'Observe', 'Follow every step', 'Use centralized activity logs to inspect outcomes and investigate failures.'],
-    ['shield', 'Protect', 'Keep control internal', 'Built with practical safeguards for the internal services and processes you operate.'],
-  ];
-  return (
-    <section id="features" className="max-w-7xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
-      <FadeUp>
-        <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-primary">Built for operational work</p>
-        <h2 className="mt-3 font-headline text-3xl sm:text-4xl font-bold text-on-background tracking-tight">
-          The building blocks for better internal systems.
-        </h2>
-      </FadeUp>
-      <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {items.map(([icon, eyebrow, title, description], i) => (
-          <Capability key={title} icon={icon} eyebrow={eyebrow} title={title} description={description} delay={i * 0.08} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ─── How It Works ──────────────────────────────────────────── */
+/* ─── Section: How it works ─────────────────────────────────── */
 function HowItWorks() {
   const steps = [
-    ['01', 'Map the work', 'Add a trigger and the actions that move your process forward.'],
-    ['02', 'Connect the flow', 'Link each step into a workflow your team can inspect and maintain.'],
-    ['03', 'Run and learn', 'Launch the workflow, then follow its execution in the activity log.'],
+    { n: '01', icon: 'add_box', title: 'Create a workflow', desc: 'Give your workflow a name and choose a trigger — manual click, an inbound webhook, or a cron schedule.' },
+    { n: '02', icon: 'account_tree', title: 'Build on the canvas', desc: 'Drag action nodes from the sidebar and connect them by drawing lines between output and input handles.' },
+    { n: '03', icon: 'tune', title: 'Configure each node', desc: 'Open the inspector to set URLs, messages, AI prompts, conditions, or delays. Use {{variable}} tokens to pass data between nodes.' },
+    { n: '04', icon: 'play_circle', title: 'Run and inspect', desc: 'Click Run to execute. Watch each node light up in real-time in the Activity panel with full output inspection per step.' },
   ];
+
   return (
-    <section id="how-it-works" className="bg-surface-container-low border-y border-outline-variant/10">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
-        <FadeUp>
-          <div className="flex flex-col md:flex-row justify-between md:items-end gap-6">
-            <div className="max-w-xl">
-              <p className="font-label text-[10px] uppercase tracking-[.18em] font-bold text-primary">A simple operating rhythm</p>
-              <h2 className="mt-3 font-headline text-3xl sm:text-4xl font-bold text-on-background tracking-tight">
-                From a repeated task to a dependable workflow.
-              </h2>
-            </div>
-            <p className="text-sm text-on-surface-variant max-w-xs">Start with the work that slows your team down most. Expand from there.</p>
-          </div>
+    <section id="how-it-works" className="py-24 px-5 bg-gray-50 dark:bg-[#13151a] border-y border-gray-100 dark:border-white/5 transition-colors duration-200">
+      <div className="max-w-6xl mx-auto">
+        <FadeUp className="text-center mb-16">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">How it works</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white">Up and running in minutes</h2>
         </FadeUp>
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-5">
-          {steps.map(([number, title, description], i) => (
-            <FadeUp key={number} delay={i * 0.1}>
-              <article className="h-full p-6 sm:p-7 rounded-2xl bg-surface-container-lowest border border-outline-variant/10">
-                <span className="font-label text-[11px] font-bold text-primary tracking-widest">{number}</span>
-                <div className="w-8 h-px bg-primary/30 mt-6 mb-5" />
-                <h3 className="font-headline text-xl font-bold text-on-background">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-on-surface-variant">{description}</p>
-              </article>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((s, i) => (
+            <FadeUp key={s.n} delay={i * 0.08}>
+              <div className="bg-white dark:bg-[#1e2130] rounded-2xl p-6 border border-gray-100 dark:border-white/8 shadow-sm dark:shadow-lg h-full dark:hover:border-purple-500/30 transition-colors">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-xs font-black text-gray-300 dark:text-gray-300 font-mono">{s.n}</span>
+                  <span className="material-symbols-outlined text-[#ff4a00] text-[22px]">{s.icon}</span>
+                </div>
+                <h3 className="font-bold text-gray-900 dark:text-white text-[15px] mb-2">{s.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-white/40 leading-relaxed">{s.desc}</p>
+              </div>
             </FadeUp>
           ))}
         </div>
@@ -350,86 +295,586 @@ function HowItWorks() {
   );
 }
 
-/* ─── Closing CTA ───────────────────────────────────────────── */
-function ClosingCTA({ onRegister }) {
+/* ─── Section 1: Visual Canvas ──────────────────────────────── */
+function CanvasSection() {
+  const canvasRef = useRef(null);
+  const inView = useInView(canvasRef, { once: true, margin: '-100px' });
+
+  const nodeData = [
+    {
+      label: 'Webhook Trigger',
+      icon: 'webhook',
+      color: '#2259bf',
+      tag: 'TRIGGER',
+      fields: [{ k: 'Method', v: 'POST' }, { k: 'Path', v: '/hook/abc123' }],
+      status: 'completed',
+    },
+    {
+      label: 'AI Summarize',
+      icon: 'auto_awesome',
+      color: '#9d4edd',
+      tag: 'ACTION',
+      fields: [{ k: 'Model', v: 'gemini-1.5-flash' }, { k: 'Max tokens', v: '512' }],
+      status: 'running',
+    },
+    {
+      label: 'Send Slack Msg',
+      icon: 'chat',
+      color: '#e01e5a',
+      tag: 'ACTION',
+      fields: [{ k: 'Channel', v: '#engineering' }, { k: 'Message', v: '{{ai_output}}' }],
+      status: 'pending',
+    },
+  ];
+
+  const statusCfg = {
+    completed: { dot: 'bg-emerald-400', label: 'Done', text: 'text-emerald-600 bg-emerald-50' },
+    running:   { dot: 'bg-amber-400 animate-pulse', label: 'Running', text: 'text-amber-600 bg-amber-50' },
+    pending:   { dot: 'bg-gray-300', label: 'Queued', text: 'text-gray-400 bg-gray-100' },
+  };
+
   return (
-    <section className="max-w-7xl mx-auto px-5 sm:px-8 py-20 sm:py-28">
-      <FadeUp>
-        <div className="relative overflow-hidden rounded-[28px] bg-primary px-6 sm:px-12 py-14 sm:py-16 text-center">
-          <div className="absolute -left-24 -bottom-32 w-72 h-72 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-          <div className="absolute -right-16 -top-28 w-72 h-72 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-          <div className="relative">
-            <p className="font-label text-[10px] uppercase tracking-[.18em] text-white/70 font-bold">AutomataX workspace</p>
-            <h2 className="mt-3 font-headline text-3xl sm:text-4xl font-bold text-white tracking-tight">
-              Give your operations room to move.
-            </h2>
-            <p className="mt-4 max-w-lg mx-auto text-white/80 leading-relaxed">
-              Build the next workflow your team should not have to run by hand.
-            </p>
-            <button
-              onClick={onRegister}
-              className="mt-8 px-6 py-3.5 rounded-xl bg-white text-primary font-label text-sm font-bold shadow-lg hover:bg-primary-fixed hover:-translate-y-px active:translate-y-0 transition-all inline-flex items-center gap-2"
+    <section id="features" className="py-24 px-5 bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        {/* Left: text */}
+        <SlideIn from="left">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">Visual Canvas</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-5 leading-snug">
+            Build complex flows<br />without writing a line.
+          </h2>
+          <p className="text-base text-gray-500 dark:text-white/50 leading-relaxed mb-8">
+            An infinite drag-and-drop canvas lets you wire together HTTP requests, AI actions, email, messaging, and logic nodes just by drawing connections between them.
+          </p>
+          <ul className="flex flex-col gap-3 mb-8">
+            {[
+              { icon: 'drag_indicator', t: 'Drag from sidebar palette' },
+              { icon: 'linear_scale', t: 'Connect via input/output handles' },
+              { icon: 'widgets', t: '11 built-in node types' },
+              { icon: 'bolt', t: 'Real-time status per node' },
+            ].map(({ icon, t }) => (
+              <li key={t} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-400">
+                <span className="w-7 h-7 rounded-lg bg-[#ff4a00]/8 dark:bg-[#9d4edd]/15 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[#ff4a00] dark:text-purple-400 text-[15px]">{icon}</span>
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </SlideIn>
+
+        {/* Right: canvas mock */}
+        <SlideIn from="right" delay={0.1}>
+          <div
+            ref={canvasRef}
+            className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-xl dark:shadow-2xl bg-gray-50 dark:bg-[#13151a]"
+            style={{ minHeight: 420 }}
+          >
+            {/* Dot grid */}
+            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#9d4edd18_1px,transparent_1px)] [background-size:24px_24px] dark:[background-size:28px_28px] opacity-50 dark:opacity-100 [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:none]" />
+
+            {/* Top bar */}
+            <div className="relative z-10 flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
+              <span className="ml-3 text-[10px] text-white/30 font-mono tracking-widest">WORKFLOW CANVAS</span>
+              <div className="ml-auto flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] text-emerald-400 font-mono">LIVE</span>
+              </div>
+            </div>
+
+            {/* SVG connector paths */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ top: 48 }}
             >
-              Create your workspace
-              <Icon className="text-[18px]">arrow_forward</Icon>
-            </button>
+              {/* Node 1 → Node 2 bezier */}
+              <motion.path
+                d="M 310 110 C 360 110, 360 200, 310 200"
+                stroke="#2259bf"
+                strokeWidth="1.5"
+                fill="none"
+                strokeDasharray="6 4"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={inView ? { pathLength: 1, opacity: 0.7 } : {}}
+                transition={{ duration: 0.8, delay: 0.6 }}
+              />
+              {/* Node 2 → Node 3 bezier */}
+              <motion.path
+                d="M 310 200 C 360 200, 360 290, 310 290"
+                stroke="#9d4edd"
+                strokeWidth="1.5"
+                fill="none"
+                strokeDasharray="6 4"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={inView ? { pathLength: 1, opacity: 0.7 } : {}}
+                transition={{ duration: 0.8, delay: 1.0 }}
+              />
+            </svg>
+
+            {/* Node cards */}
+            <div className="relative z-10 flex flex-col gap-3 p-5 pt-4">
+              {nodeData.map((n, i) => {
+                const s = statusCfg[n.status];
+                return (
+                  <motion.div
+                    key={n.label}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.2 + i * 0.18, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                    className="bg-[#1e2130] border border-white/10 rounded-xl overflow-hidden shadow-lg w-[280px]"
+                    style={{ boxShadow: `0 0 0 1px ${n.color}22, 0 4px 20px rgba(0,0,0,0.4)` }}
+                  >
+                    {/* Node header */}
+                    <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: `${n.color}22`, borderBottom: `1px solid ${n.color}33` }}>
+                      <span className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: n.color }}>
+                        <span className="material-symbols-outlined text-white text-[13px]">{n.icon}</span>
+                      </span>
+                      <span className="text-white text-[12px] font-bold flex-1">{n.label}</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: n.color, background: `${n.color}20`, border: `1px solid ${n.color}40` }}>{n.tag}</span>
+                      {/* Output handle */}
+                      <div className="w-3 h-3 rounded-full border-2 shrink-0 ml-1" style={{ borderColor: n.color, background: '#13151a' }} />
+                    </div>
+
+                    {/* Node body */}
+                    <div className="px-3 py-2.5 flex flex-col gap-1.5">
+                      {n.fields.map(f => (
+                        <div key={f.k} className="flex items-center gap-2">
+                          <span className="text-[10px] text-white/30 font-mono w-20 shrink-0">{f.k}</span>
+                          <span className="text-[10px] text-white/70 font-mono truncate">{f.v}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Node footer: status */}
+                    <div className="px-3 py-2 border-t border-white/5 flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full shrink-0 ${s.dot}`} />
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${s.text}`}>{s.label}</span>
+                      {n.status === 'completed' && <span className="ml-auto text-[9px] text-white/20 font-mono">142ms</span>}
+                      {n.status === 'running' && <span className="ml-auto text-[9px] text-amber-400/50 font-mono">running…</span>}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </FadeUp>
+        </SlideIn>
+      </div>
     </section>
   );
 }
 
-/* ─── Footer ────────────────────────────────────────────────── */
+
+
+/* ─── Section 2: AI Generator ───────────────────────────────── */
+function AISection() {
+  const [text, setText] = useState('');
+  const fullText = 'Fetch my GitHub issues, summarize them with AI, and post to the #engineering Slack channel every morning at 9am.';
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-100px' });
+
+  useEffect(() => {
+    if (!inView) return;
+    let i = 0;
+    const iv = setInterval(() => {
+      setText(fullText.slice(0, i));
+      i++;
+      if (i > fullText.length) clearInterval(iv);
+    }, 35);
+    return () => clearInterval(iv);
+  }, [inView]);
+
+  return (
+    <section className="py-24 px-5 bg-gray-950">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        {/* Visual */}
+        <SlideIn from="left">
+          <div ref={ref} className="bg-black border border-white/10 rounded-2xl p-6 shadow-2xl">
+            <div className="flex items-center gap-2 mb-5">
+              <span className="material-symbols-outlined text-purple-400 text-[20px]">auto_awesome</span>
+              <span className="text-white font-semibold text-sm">AI Workflow Generator</span>
+            </div>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4 min-h-[110px]">
+              <p className="text-gray-300 text-sm leading-relaxed font-mono">
+                {text}
+                <span className="inline-block w-2 h-[1em] bg-purple-400 animate-pulse align-middle ml-0.5" />
+              </p>
+            </div>
+            <div className="mt-4">
+              <span className="text-[11px] text-gray-600 font-mono">Powered by Gemini AI · Log in to generate</span>
+            </div>
+
+            {/* Generated preview */}
+            <div className="mt-5 border-t border-white/10 pt-5 flex flex-wrap gap-2">
+              {['Webhook Trigger', 'HTTP Request', 'AI Summarize', 'Send Slack Msg'].map((t, i) => (
+                <motion.span
+                  key={t}
+                  initial={{ opacity: 0, scale: 0.85 }}
+                  animate={inView && text.length === fullText.length ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ delay: 0.2 + i * 0.1 }}
+                  className="px-3 py-1 rounded-full bg-white/10 text-gray-300 text-[11px] font-mono border border-white/10"
+                >
+                  {t}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+        </SlideIn>
+
+        {/* Text */}
+        <SlideIn from="right" delay={0.1}>
+          <p className="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">Generative AI</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-5 leading-snug">
+            Describe it.<br />AutomataX builds it.
+          </h2>
+          <p className="text-base text-gray-400 leading-relaxed mb-8">
+            No need to drag anything. Type what you need in plain English and our Gemini-powered AI instantly generates a complete, fully connected workflow and drops it right on the canvas.
+          </p>
+          <ul className="flex flex-col gap-3">
+            {['Natural language to full workflow', 'Nodes pre-configured with your intent', 'Edit and extend the AI result', 'Works across all 11 node types'].map(t => (
+              <li key={t} className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-purple-400 text-[13px]">check</span>
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </SlideIn>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section 3: Triggers ───────────────────────────────────── */
+function TriggersSection() {
+  const triggers = [
+    { icon: 'bolt', title: 'Manual Trigger', desc: 'Click "Run" in the editor to execute anytime — ideal for testing your workflow before scheduling.', color: '#2259bf', bg: 'bg-blue-50' },
+    { icon: 'webhook', title: 'Webhook Trigger', desc: 'AutomataX gives you a unique webhook URL. POST from Stripe, GitHub, or any external tool to fire the workflow instantly.', color: '#ff4a00', bg: 'bg-orange-50' },
+    { icon: 'schedule', title: 'Cron Schedule', desc: 'Schedule with a standard cron expression. Run every hour, every Monday at 9am, or any custom cadence you need.', color: '#10b981', bg: 'bg-emerald-50' },
+  ];
+
+  return (
+    <section className="py-24 px-5 bg-gray-50 dark:bg-[#0a0a0f] border-y border-gray-100 dark:border-transparent transition-colors duration-200">
+      <div className="max-w-6xl mx-auto">
+        <FadeUp className="text-center mb-14">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">Triggers</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-4">Run from anywhere, anytime.</h2>
+          <p className="text-base text-gray-500 dark:text-white/40 max-w-xl mx-auto">Three ways to start a workflow — pick the one that fits each use case.</p>
+        </FadeUp>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {triggers.map((t, i) => (
+            <FadeUp key={t.title} delay={i * 0.1}>
+              <div className="bg-white dark:bg-[#1e2130] border border-gray-100 dark:border-white/8 rounded-2xl shadow-sm dark:shadow-none p-6 h-full hover:shadow-md dark:hover:border-white/15 dark:hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                <div className={`w-12 h-12 rounded-xl ${t.bg} flex items-center justify-center mb-5`}>
+                  <span className="material-symbols-outlined text-[24px]" style={{ color: t.color }}>{t.icon}</span>
+                </div>
+                <h3 className="font-bold text-gray-900 dark:text-white text-[15px] mb-2">{t.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-white/40 leading-relaxed">{t.desc}</p>
+                {t.title === 'Cron Schedule' && (
+                  <p className="mt-4 font-mono text-[11px] text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 dark:border dark:border-emerald-500/20 rounded-lg px-3 py-2">0 9 * * 1  ← every Monday 9am</p>
+                )}
+                {t.title === 'Webhook Trigger' && (
+                  <p className="mt-4 font-mono text-[11px] text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-[#ff4a00]/10 dark:border dark:border-[#ff4a00]/20 rounded-lg px-3 py-2 truncate">POST /api/webhook/wh_a7f3…</p>
+                )}
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section 4: Logic & Loops ──────────────────────────────── */
+function LogicSection() {
+  const nodeTypes = [
+    { icon: 'call_split', label: 'Branch', desc: 'If/Else conditional routing', color: '#f59e0b' },
+    { icon: 'repeat', label: 'For Each', desc: 'Iterate over arrays of data', color: '#10b981' },
+    { icon: 'hourglass_empty', label: 'Delay', desc: 'Wait N seconds before next node', color: '#6366f1' },
+    { icon: 'http', label: 'HTTP Request', desc: 'Call any REST API endpoint', color: '#2259bf' },
+    { icon: 'mail', label: 'Send Email', desc: 'Send via Resend API', color: '#4a6aa8' },
+    { icon: 'chat', label: 'Slack Message', desc: 'Post to any channel or DM', color: '#e01e5a' },
+    { icon: 'forum', label: 'Discord', desc: 'Send to a Discord webhook', color: '#5865F2' },
+    { icon: 'auto_awesome', label: 'AI Summarize', desc: 'Summarize long content via AI', color: '#9d4edd' },
+    { icon: 'troubleshoot', label: 'AI Extract', desc: 'Pull structured data from text', color: '#9d4edd' },
+    { icon: 'psychology', label: 'AI Decide', desc: 'Route based on AI classification', color: '#9d4edd' },
+  ];
+
+  return (
+    <section id="integrations" className="py-24 px-5 bg-white dark:bg-[#13151a] border-y border-transparent dark:border-white/5 transition-colors duration-200">
+      <div className="max-w-6xl mx-auto">
+        <FadeUp className="text-center mb-14">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">Node Library</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-4">Real logic. Real power.</h2>
+          <p className="text-base text-gray-500 dark:text-white/40 max-w-xl mx-auto">10 built-in node types covering APIs, AI, messaging, and flow control — all available on the canvas with zero setup.</p>
+        </FadeUp>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          {nodeTypes.map((n, i) => (
+            <FadeUp key={n.label} delay={Math.floor(i / 5) * 0.1 + (i % 5) * 0.05}>
+              <div className="bg-gray-50 dark:bg-[#1e2130] border border-gray-100 dark:border-white/8 rounded-xl p-4 text-center hover:bg-white dark:hover:bg-[#252840] hover:shadow-md dark:hover:border-purple-500/30 dark:hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-default h-full flex flex-col items-center">
+                <div className="w-10 h-10 rounded-xl mb-3 flex items-center justify-center" style={{ background: `${n.color}18` }}>
+                  <span className="material-symbols-outlined text-[20px]" style={{ color: n.color }}>{n.icon}</span>
+                </div>
+                <p className="text-xs font-bold text-gray-900 dark:text-white mb-1">{n.label}</p>
+                <p className="text-[10px] text-gray-400 dark:text-white/30 leading-tight">{n.desc}</p>
+              </div>
+            </FadeUp>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Section 5: Real-time Execution ────────────────────────── */
+function ExecutionSection() {
+  const [logs, setLogs] = useState([]);
+  const [running, setRunning] = useState(false);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false, margin: '-150px' });
+
+  useEffect(() => {
+    if (!inView || running) return;
+    setRunning(true);
+    setLogs([]);
+    const sequence = [
+      { t: 0, text: '▶  Starting execution run-728fa4', type: 'info' },
+      { t: 350, text: '   Resolving trigger payload…', type: 'dim' },
+      { t: 650, text: '[1/3] HTTP Request → starting', type: 'info' },
+      { t: 1300, text: '[1/3] HTTP Request ✓  68ms', type: 'success' },
+      { t: 1500, text: '[2/3] AI Summarize → starting', type: 'info' },
+      { t: 3100, text: '[2/3] AI Summarize ✓  1612ms', type: 'success' },
+      { t: 3300, text: '[3/3] Slack Message → starting', type: 'info' },
+      { t: 3700, text: '[3/3] Slack Message ✓  304ms', type: 'success' },
+      { t: 3900, text: '✔  Execution completed  2.0s total', type: 'done' },
+    ];
+    const timers = sequence.map(s => setTimeout(() => setLogs(prev => [...prev, s]), s.t));
+    const reset = setTimeout(() => { setRunning(false); }, 7000);
+    return () => { timers.forEach(clearTimeout); clearTimeout(reset); };
+  }, [inView]);
+
+  const colorMap = { info: 'text-gray-300', dim: 'text-gray-600', success: 'text-emerald-400', done: 'text-emerald-300 font-bold' };
+
+  return (
+    <section id="execution" className="py-24 px-5 bg-gray-950">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        {/* Text */}
+        <SlideIn from="left">
+          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-3">Real-time Execution</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-5 leading-snug">
+            Total visibility.<br />Zero guesswork.
+          </h2>
+          <p className="text-base text-gray-400 leading-relaxed mb-8">
+            Every execution streams live via WebSocket. Inspect the exact output of every node — timing, status, and payload. When something fails, you'll know exactly where and why.
+          </p>
+          <ul className="flex flex-col gap-3">
+            {['Live WebSocket execution stream', 'Per-node timing and output inspection', 'Full error traces with node context', 'Analytics dashboard with trend charts'].map(t => (
+              <li key={t} className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-emerald-400 text-[13px]">check</span>
+                </span>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </SlideIn>
+
+        {/* Live terminal */}
+        <SlideIn from="right" delay={0.1}>
+          <div ref={ref} className="bg-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            {/* Terminal chrome */}
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/10 bg-white/5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              <span className="ml-3 text-[11px] text-gray-500 font-mono">AutomataX execution log</span>
+            </div>
+            {/* Log lines */}
+            <div className="p-5 font-mono text-[12px] min-h-[240px] flex flex-col gap-2">
+              {logs.map((l, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className={colorMap[l.type]}
+                >
+                  {l.text}
+                </motion.p>
+              ))}
+              {running && logs.length < 9 && (
+                <span className="inline-block w-2 h-3.5 bg-gray-400/70 animate-pulse" />
+              )}
+            </div>
+          </div>
+        </SlideIn>
+      </div>
+    </section>
+  );
+}
+
+/* ─── CTA ────────────────────────────────────────────────────── */
+function CTA({ onRegister }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-100px' });
+
+  const perks = [
+    { icon: 'bolt', text: 'No credit card' },
+    { icon: 'cloud_off', text: 'No cloud lock-in' },
+    { icon: 'code_off', text: 'No YAML configs' },
+    { icon: 'lock_open', text: 'Fully open workflow' },
+  ];
+
+  return (
+    <section ref={ref} className="relative overflow-hidden bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
+      {/* Ambient glow */}
+      <div className="hidden dark:block absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full opacity-25 blur-[120px]" style={{ background: 'radial-gradient(ellipse, #ff4a00 0%, transparent 70%)' }} />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[200px] rounded-full opacity-10 blur-[80px]" style={{ background: '#9d4edd' }} />
+        <div className="absolute top-0 right-0 w-[300px] h-[200px] rounded-full opacity-10 blur-[80px]" style={{ background: '#2259bf' }} />
+      </div>
+
+      {/* Dot grid */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff06_1px,transparent_1px)] [background-size:24px_24px] dark:[background-size:22px_22px] opacity-50 dark:opacity-100 [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:none]" />
+
+      <div className="relative z-10 max-w-4xl mx-auto px-5 py-32 flex flex-col items-center text-center">
+
+        {/* Top badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#ff4a00]/30 bg-[#ff4a00]/10 text-[#ff4a00] text-xs font-bold uppercase tracking-widest mb-10"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-[#ff4a00] animate-pulse" />
+          Free to start · No setup required
+        </motion.div>
+
+        {/* Headline */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight dark:tracking-tighter text-gray-950 dark:text-white leading-[1.05] mb-6"
+        >
+          Stop duct-taping.<br />
+          <span className="text-[#ff4a00] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-br dark:from-[#ff4a00] dark:to-[#ff8c40]">
+            Start automating.
+          </span>
+        </motion.h2>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="text-lg text-gray-500 dark:text-gray-400 max-w-xl leading-relaxed mb-12"
+        >
+          Wire up APIs, AI models, and messaging in minutes on a visual canvas. Then ship it — with real-time logs showing you exactly what ran.
+        </motion.p>
+
+        {/* Perks strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.26 }}
+          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mb-12"
+        >
+          {perks.map(p => (
+            <div key={p.text} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-500">
+              <span className="material-symbols-outlined text-[#ff4a00] text-[16px]">{p.icon}</span>
+              {p.text}
+            </div>
+          ))}
+        </motion.div>
+
+        {/* CTA button */}
+        <motion.button
+          onClick={onRegister}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={inView ? { opacity: 1, scale: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.32 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.97 }}
+          className="relative px-12 py-5 rounded-2xl text-white font-black text-lg overflow-hidden group"
+          style={{ background: 'linear-gradient(135deg, #ff4a00, #e04200)', boxShadow: '0 0 40px rgba(255,74,0,0.35), 0 4px 20px rgba(0,0,0,0.4)' }}
+        >
+          <span className="relative z-10">Start building for free</span>
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, #ff6a20, #ff4a00)' }} />
+        </motion.button>
+
+        {/* Social proof hint */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.5 }}
+          className="mt-6 text-xs text-gray-600 font-mono tracking-wide"
+        >
+          Built end-to-end with React + Node.js + MongoDB + WebSockets
+        </motion.p>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Footer ─────────────────────────────────────────────────── */
 function Footer() {
   return (
-    <footer className="border-t border-outline-variant/10">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <Brand compact />
-        <p className="text-xs text-on-surface-variant">© {new Date().getFullYear()} AutomataX. Internal automation made clear.</p>
-        <div className="flex items-center gap-4 text-xs font-semibold text-on-surface-variant">
-          <a href="#features" className="hover:text-primary transition-colors">Capabilities</a>
-          <a href="#how-it-works" className="hover:text-primary transition-colors">How it works</a>
-        </div>
+    <footer className="border-t border-gray-100 dark:border-white/5 py-8 px-5 bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
+      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center">
+        <p className="text-xs text-gray-400 dark:text-white/25 text-center leading-relaxed">
+          © 2026 AutomataX · All rights reserved.<br />
+          For educational and learning purposes only by <span className="font-semibold text-gray-600 dark:text-white/50">Vidush Prakash Sinha</span>.
+        </p>
       </div>
     </footer>
   );
 }
 
-/* ─── Page ──────────────────────────────────────────────────── */
+/* ─── Root ───────────────────────────────────────────────────── */
 export default function Landing() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
+  const location = useLocation();
+  const [authMode, setAuthMode] = useState(null);
 
   useEffect(() => {
-    if (location.state?.auth) {
-      setAuthMode(location.state.auth);
-      setAuthModalOpen(true);
-      // Clear the state so the modal doesn't re-open on refresh
-      navigate(location.pathname, { replace: true, state: {} });
+    if (location.state?.openAuth) {
+      setAuthMode(location.state.openAuth);
+      window.history.replaceState({}, '', location.pathname);
     }
-  }, [location.state]);
-  const openLogin = () => { setAuthMode('login'); setAuthModalOpen(true); };
-  const openRegister = () => { setAuthMode('register'); setAuthModalOpen(true); };
+  }, [location]);
+
+  const handleAuth = (mode) => setAuthMode(mode);
+  const handleSuccess = () => { setAuthMode(null); navigate('/dashboard'); };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      className="min-h-screen bg-background text-on-background font-body overflow-x-hidden"
-    >
-      <NavBar onLogin={openLogin} onRegister={openRegister} />
-      <Hero onRegister={openRegister} onLogin={openLogin} />
-      <ProductSection />
-      <Features />
+    <div className="bg-white dark:bg-[#0a0a0f] text-gray-900 dark:text-white font-body transition-colors duration-200">
+      <AnalyticsTicker />
+      <NavBar onLogin={() => handleAuth('login')} onRegister={() => handleAuth('register')} />
+      <Hero onRegister={() => handleAuth('register')} />
       <HowItWorks />
-      <ClosingCTA onRegister={openRegister} />
+      <CanvasSection />
+      <AISection />
+      <TriggersSection />
+      <LogicSection />
+      <ExecutionSection />
+      <CTA onRegister={() => handleAuth('register')} />
       <Footer />
-      <AuthModal isOpen={authModalOpen} onClose={() => setAuthModalOpen(false)} defaultMode={authMode} />
-    </motion.div>
+
+      <AnimatePresence>
+        {authMode && (
+          <AuthModal
+            key={authMode}
+            isOpen={Boolean(authMode)}
+            defaultMode={authMode}
+            onClose={() => setAuthMode(null)}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

@@ -38,7 +38,9 @@ export default function AppViewer() {
       setLogs(prev => [...prev, { id: Date.now(), type: 'info', msg: `Started node: ${data.nodeId}` }]);
     };
     const handleNodeCompleted = (data) => {
-      setLogs(prev => [...prev, { id: Date.now(), type: 'success', msg: `Completed node: ${data.nodeId}` }]);
+      const msg = `Completed node: ${data.nodeId}`;
+      const outputMsg = data.output ? `\n${JSON.stringify(data.output, null, 2)}` : '';
+      setLogs(prev => [...prev, { id: Date.now(), type: 'success', msg: msg + outputMsg }]);
     };
     const handleNodeFailed = (data) => {
       setLogs(prev => [...prev, { id: Date.now(), type: 'error', msg: `Failed node: ${data.nodeId} - ${data.error}` }]);
@@ -200,7 +202,7 @@ export default function AppViewer() {
                       key={log.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`p-2 rounded border ${
+                      className={`p-2 rounded border whitespace-pre-wrap ${
                         log.type === 'success' ? 'bg-primary/5 border-primary/20 text-primary' :
                         log.type === 'error' ? 'bg-error/5 border-error/20 text-error' :
                         'bg-surface-container border-outline-variant/10 text-on-background'

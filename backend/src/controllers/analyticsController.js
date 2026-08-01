@@ -47,3 +47,33 @@ export const getDashboardAnalytics = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch analytics data' });
   }
 };
+
+export const getPublicStats = async (req, res) => {
+  try {
+    const totalWorkflows = await Workflow.countDocuments();
+    const totalExecutions = await WorkflowExecution.countDocuments();
+    
+    // Compute avg execution time from durationMs
+    const avgDurationResult = await WorkflowExecution.aggregate([
+      { $match: { durationMs: { $ne: null } } },
+      { $group: { _id: null, avg: { $avg: "$durationMs" } } }
+    ]);
+    const avgDurationMs = avgDurationResult.length > 0 ? avgDurationResult[0].avg : 0;
+    const avgExecutionSeconds = avgDurationMs ? (avgDurationMs / 1000).toFixed(2) : "0.00";
+    
+    const successfulExecutions = await WorkflowExecution.countDocuments({ status: 'completed' });
+    const successRate = totalExecutions > 0 
+      ? ((successfulExecutions / totalExecutions) * 100).toFixed(2)
+      : "100.00";
+
+    res.json({
+      totalWorkflows,
+      totalExecutions,
+      avgExecutionSeconds,
+      successRate
+    });
+  } catch (error) {
+    console.error('[Analytics] Error fetching public stats:', error);
+    res.status(500).json({ error: 'Failed to fetch public stats' });
+  }
+};
