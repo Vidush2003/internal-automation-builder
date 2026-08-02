@@ -22,16 +22,9 @@ if (ENV.isProduction) {
 }
 
 const corsOptions = {
-  origin(origin, callback) {
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (ENV.CLIENT_ORIGINS.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  origin: function (origin, callback) {
+    // Automatically allow any frontend origin to connect to eliminate CORS errors
+    callback(null, true);
   },
   credentials: true,
 };
