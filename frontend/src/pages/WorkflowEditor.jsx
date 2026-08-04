@@ -69,18 +69,18 @@ const Icon = ({ name, className = '' }) => (
 function Field({ label, children, hint }) {
   return (
     <div>
-      <label className="block mb-1.5 font-label text-[10px] uppercase tracking-[.16em] font-bold text-on-surface-variant">
+      <label className="block mb-1.5 font-label text-[10px] uppercase tracking-[.16em] font-bold text-gray-500 dark:text-gray-400">
         {label}
       </label>
       {children}
-      {hint && <p className="mt-1 text-[10px] text-on-surface-variant">{hint}</p>}
+      {hint && <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">{hint}</p>}
     </div>
   );
 }
 
 const inputCls = [
-  'w-full rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-3.5 py-2.5',
-  'text-sm text-on-surface outline-none transition-all',
+  'w-full rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14] px-3.5 py-2.5',
+  'text-sm text-gray-700 dark:text-gray-200 outline-none transition-all',
   'focus:border-primary focus:ring-2 focus:ring-primary/10',
   'placeholder:text-outline',
 ].join(' ');
@@ -312,7 +312,7 @@ function Palette({ onAdd, onChangeTrigger, currentTriggerType }) {
     <div className="flex flex-col gap-5">
       {/* Trigger switcher */}
       <div>
-        <p className="mb-3 font-label text-[10px] uppercase tracking-[.16em] font-bold text-on-surface-variant/70">Trigger</p>
+        <p className="mb-3 font-label text-[10px] uppercase tracking-[.16em] font-bold text-gray-500 dark:text-gray-400/70">Trigger</p>
         <div className="flex flex-col gap-2">
           {TRIGGER_PALETTE_ITEMS.map((item) => {
             const def = NODE_DEF[item.type] || NODE_DEF.TRIGGER_MANUAL;
@@ -323,7 +323,7 @@ function Palette({ onAdd, onChangeTrigger, currentTriggerType }) {
                 whileHover={{ x: 3 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onChangeTrigger(item.type)}
-                className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-all group ${isActive ? 'border-primary/40 bg-primary/8 shadow-sm' : 'border-outline-variant/10 bg-surface-container-lowest hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm'}`}
+                className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-all group ${isActive ? 'border-primary/40 bg-primary/8 shadow-sm' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14] hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm'}`}
               >
                 <span
                   className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
@@ -332,12 +332,12 @@ function Palette({ onAdd, onChangeTrigger, currentTriggerType }) {
                   <Icon name={item.icon} className="text-white text-[18px]" />
                 </span>
                 <span className="flex-1 min-w-0">
-                  <span className="block text-sm font-bold text-on-background">{item.title}</span>
-                  <span className="block mt-0.5 text-[11px] text-on-surface-variant">{item.desc}</span>
+                  <span className="block text-sm font-bold text-gray-900 dark:text-white">{item.title}</span>
+                  <span className="block mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">{item.desc}</span>
                 </span>
                 {isActive
                   ? <Icon name="check_circle" className="text-[20px] text-primary" />
-                  : <Icon name="radio_button_unchecked" className="text-[20px] text-on-surface-variant/30 group-hover:text-primary/40 transition-colors" />
+                  : <Icon name="radio_button_unchecked" className="text-[20px] text-gray-500 dark:text-gray-400/30 group-hover:text-primary/40 transition-colors" />
                 }
               </motion.button>
             );
@@ -347,7 +347,7 @@ function Palette({ onAdd, onChangeTrigger, currentTriggerType }) {
 
       {/* Actions */}
       <div>
-        <p className="mb-3 font-label text-[10px] uppercase tracking-[.16em] font-bold text-on-surface-variant/70">Add an action</p>
+        <p className="mb-3 font-label text-[10px] uppercase tracking-[.16em] font-bold text-gray-500 dark:text-gray-400/70">Add an action</p>
         <div className="flex flex-col gap-2">
           {PALETTE_ITEMS.map((item) => {
             const def = NODE_DEF[item.type] || NODE_DEF.ACTION_HTTP;
@@ -357,7 +357,7 @@ function Palette({ onAdd, onChangeTrigger, currentTriggerType }) {
                 whileHover={{ x: 3 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onAdd(item.type)}
-                className="flex items-center gap-3 rounded-2xl border border-outline-variant/10 bg-surface-container-lowest p-3 text-left hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm transition-all group"
+                className="flex items-center gap-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14] p-3 text-left hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm transition-all group"
               >
                 <span
                   className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-md transition-shadow"
@@ -366,8 +366,8 @@ function Palette({ onAdd, onChangeTrigger, currentTriggerType }) {
                   <Icon name={item.icon} className="text-white text-[18px]" />
                 </span>
                 <span className="flex-1 min-w-0">
-                  <span className="block text-sm font-bold text-on-background">{item.title}</span>
-                  <span className="block mt-0.5 text-[11px] text-on-surface-variant">{item.desc}</span>
+                  <span className="block text-sm font-bold text-gray-900 dark:text-white">{item.title}</span>
+                  <span className="block mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">{item.desc}</span>
                 </span>
                 <Icon name="add_circle" className="text-[20px] text-primary/40 group-hover:text-primary transition-colors" />
               </motion.button>
@@ -425,7 +425,7 @@ function ActivityLogItem({ log, index, isLast, nodes }) {
           onClick={() => hasOutput && setExpanded((p) => !p)}
           style={{ cursor: hasOutput ? 'pointer' : 'default' }}
         >
-          <div className="rounded-2xl border border-outline-variant/10 bg-surface-container-lowest overflow-hidden hover:border-outline-variant/25 transition-colors">
+          <div className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14] overflow-hidden hover:border-gray-200 dark:border-white/10 transition-colors">
             {/* Header row */}
             <div className="px-3.5 pt-3 pb-2.5 flex items-start gap-2.5">
               {/* Node type icon chip */}
@@ -439,7 +439,7 @@ function ActivityLogItem({ log, index, isLast, nodes }) {
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-bold text-on-background truncate">
+                  <p className="text-xs font-bold text-gray-900 dark:text-white truncate">
                     {nodeLabel || (nodeDef ? nodeDef.label : (log.nodeId || 'System'))}
                   </p>
                   <span
@@ -450,14 +450,14 @@ function ActivityLogItem({ log, index, isLast, nodes }) {
                   </span>
                 </div>
                 {log.nodeId && (
-                  <p className="text-[9px] font-mono text-on-surface-variant/60 mt-0.5 truncate">{log.nodeId}</p>
+                  <p className="text-[9px] font-mono text-gray-500 dark:text-gray-400/60 mt-0.5 truncate">{log.nodeId}</p>
                 )}
               </div>
             </div>
 
             {/* Message */}
             {(log.message || log.error) && (
-              <p className="px-3.5 pb-2.5 text-[11px] leading-relaxed text-on-surface-variant">
+              <p className="px-3.5 pb-2.5 text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
                 {log.error || log.message}
               </p>
             )}
@@ -485,7 +485,7 @@ function ActivityLogItem({ log, index, isLast, nodes }) {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="mt-1.5 bg-surface-container rounded-2xl border border-outline-variant/10 p-3 space-y-2">
+              <div className="mt-1.5 bg-gray-100 dark:bg-[#161620] rounded-2xl border border-gray-200 dark:border-white/10 p-3 space-y-2">
                 {Object.entries(log.output).map(([k, v]) => {
                   const isLong = typeof v === 'string' && v.length > 60;
                   const isObj  = v !== null && typeof v === 'object';
@@ -493,11 +493,11 @@ function ActivityLogItem({ log, index, isLast, nodes }) {
                   const label  = k.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').trim();
                   return (
                     <div key={k} className={`${isLong || isObj ? 'flex flex-col gap-1' : 'flex items-start gap-2 justify-between'}`}>
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-on-surface-variant/60 shrink-0 mt-0.5">{label}</span>
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400/60 shrink-0 mt-0.5">{label}</span>
                       {isObj ? (
-                        <pre className="text-[9px] font-mono text-on-surface-variant bg-surface-container-highest rounded-lg p-2 overflow-x-auto whitespace-pre-wrap leading-relaxed">{display}</pre>
+                        <pre className="text-[9px] font-mono text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-[#222230] rounded-lg p-2 overflow-x-auto whitespace-pre-wrap leading-relaxed">{display}</pre>
                       ) : (
-                        <span className={`text-[10px] font-medium text-on-surface leading-relaxed ${isLong ? 'block' : 'text-right max-w-[55%]'} break-words`}>{display}</span>
+                        <span className={`text-[10px] font-medium text-gray-700 dark:text-gray-200 leading-relaxed ${isLong ? 'block' : 'text-right max-w-[55%]'} break-words`}>{display}</span>
                       )}
                     </div>
                   );
@@ -514,13 +514,13 @@ function ActivityLogItem({ log, index, isLast, nodes }) {
 function ActivityPanel({ logs, nodes }) {
   if (logs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center text-on-surface-variant gap-4">
+      <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500 dark:text-gray-400 gap-4">
         <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
           <Icon name="play_circle" className="text-[32px] text-primary/40" />
         </div>
         <div>
-          <p className="text-sm font-bold text-on-background">No runs yet</p>
-          <p className="mt-1.5 text-xs text-on-surface-variant leading-relaxed">Click <strong>Run</strong> to execute this workflow<br/>and watch the results appear here.</p>
+          <p className="text-sm font-bold text-gray-900 dark:text-white">No runs yet</p>
+          <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Click <strong>Run</strong> to execute this workflow<br/>and watch the results appear here.</p>
         </div>
       </div>
     );
@@ -531,12 +531,12 @@ function ActivityPanel({ logs, nodes }) {
   return (
     <div className="space-y-0">
       {/* Summary bar */}
-      <div className="mb-4 p-3 rounded-2xl bg-surface-container-low border border-outline-variant/10 flex items-center gap-3">
+      <div className="mb-4 p-3 rounded-2xl bg-gray-50 dark:bg-[#12121a] border border-gray-200 dark:border-white/10 flex items-center gap-3">
         <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
           <Icon name="receipt_long" className="text-[16px] text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Execution result</p>
+          <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Execution result</p>
           <div className="flex items-center gap-2 mt-1 flex-wrap">
             {Object.entries(counts).map(([status, n]) => {
               const m = STATUS_META[status] || STATUS_META.running;
@@ -600,7 +600,7 @@ function NodeInspector({ node, workflow, onUpdate, onDelete }) {
 
       <Field label="Node ID" hint="Use this ID for variable interpolation e.g. {{node_id.data}}">
         <input
-          className={`${inputCls} font-mono text-[10px] text-on-surface-variant bg-surface-container`}
+          className={`${inputCls} font-mono text-[10px] text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#161620]`}
           readOnly
           value={node.id}
           onClick={(e) => e.target.select()}
@@ -618,7 +618,7 @@ function NodeInspector({ node, workflow, onUpdate, onDelete }) {
       {isWebhook && (
         <Field label="Webhook URL" hint="Send a POST request to this URL to trigger the workflow. Payload will be available via {{trigger.payload.X}}">
           <input
-            className={`${inputCls} font-mono text-[10px] text-on-surface-variant bg-surface-container`}
+            className={`${inputCls} font-mono text-[10px] text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-[#161620]`}
             readOnly
             value={webhookUrl}
             onClick={(e) => e.target.select()}
@@ -851,7 +851,7 @@ function NodeInspector({ node, workflow, onUpdate, onDelete }) {
               onChange={(e) => onUpdate('itemVariableName', e.target.value)}
             />
           </Field>
-          <div className="rounded-xl bg-surface-container-low border border-outline-variant/10 p-3 text-[10px] text-on-surface-variant leading-relaxed">
+          <div className="rounded-xl bg-gray-50 dark:bg-[#12121a] border border-gray-200 dark:border-white/10 p-3 text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed">
             <strong className="text-emerald-600">↓ loop</strong> handle → connect to nodes that run for each item.<br />
             <strong className="text-gray-500">→ done</strong> handle → connect to nodes that run after all iterations.
           </div>
@@ -859,7 +859,7 @@ function NodeInspector({ node, workflow, onUpdate, onDelete }) {
       )}
 
       {isTrigger ? (
-        <div className="rounded-2xl bg-primary/6 border border-primary/10 p-4 text-xs leading-relaxed text-on-surface-variant">
+        <div className="rounded-2xl bg-primary/6 border border-primary/10 p-4 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
           <Icon name="info" className="text-primary text-[16px] mb-1" />
           <p>This is the entry point for the workflow. Click <strong>Run</strong> in the top bar to trigger it manually.</p>
         </div>
@@ -883,14 +883,14 @@ function WorkflowDetails({ workflow, onUpdate, nodes, edges }) {
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col gap-5"
     >
-      <div className="rounded-2xl bg-surface-container-low border border-outline-variant/10 p-4 flex items-center justify-between">
+      <div className="rounded-2xl bg-gray-50 dark:bg-[#12121a] border border-gray-200 dark:border-white/10 p-4 flex items-center justify-between">
         <div>
-          <p className="text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">Workflow canvas</p>
-          <p className="mt-0.5 text-sm text-on-surface-variant">Select a node below to configure it.</p>
+          <p className="text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400">Workflow canvas</p>
+          <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">Select a node below to configure it.</p>
         </div>
         <div className="text-right">
-          <p className="text-xl font-bold text-on-background font-headline">{nodes.length}</p>
-          <p className="text-[10px] text-on-surface-variant">node{nodes.length !== 1 ? 's' : ''}</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-white font-headline">{nodes.length}</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">node{nodes.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -924,13 +924,13 @@ function WorkflowDetails({ workflow, onUpdate, nodes, edges }) {
       </Field>
 
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-surface-container-low border border-outline-variant/10 p-3 text-center">
-          <p className="text-xl font-bold text-on-background font-headline">{nodes.length}</p>
-          <p className="text-[10px] text-on-surface-variant mt-0.5">Nodes</p>
+        <div className="rounded-xl bg-gray-50 dark:bg-[#12121a] border border-gray-200 dark:border-white/10 p-3 text-center">
+          <p className="text-xl font-bold text-gray-900 dark:text-white font-headline">{nodes.length}</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Nodes</p>
         </div>
-        <div className="rounded-xl bg-surface-container-low border border-outline-variant/10 p-3 text-center">
-          <p className="text-xl font-bold text-on-background font-headline">{edges.length}</p>
-          <p className="text-[10px] text-on-surface-variant mt-0.5">Connections</p>
+        <div className="rounded-xl bg-gray-50 dark:bg-[#12121a] border border-gray-200 dark:border-white/10 p-3 text-center">
+          <p className="text-xl font-bold text-gray-900 dark:text-white font-headline">{edges.length}</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Connections</p>
         </div>
       </div>
     </motion.div>
@@ -991,8 +991,14 @@ export default function WorkflowEditor() {
   useEffect(() => () => { if (pollingRef.current) clearInterval(pollingRef.current); }, []);
 
   /* ── Canvas handlers ─────────────────────────────────────────────────── */
-  const onNodesChange = useCallback((changes) => { setNodes((c) => applyNodeChanges(changes, c)); setIsDirty(true); }, []);
-  const onEdgesChange = useCallback((changes) => { setEdges((c) => applyEdgeChanges(changes, c)); setIsDirty(true); }, []);
+  const onNodesChange = useCallback((changes) => { 
+    setNodes((c) => applyNodeChanges(changes, c)); 
+    if (changes.some(c => c.type !== 'select' && c.type !== 'dimensions')) setIsDirty(true); 
+  }, []);
+  const onEdgesChange = useCallback((changes) => { 
+    setEdges((c) => applyEdgeChanges(changes, c)); 
+    if (changes.some(c => c.type !== 'select')) setIsDirty(true); 
+  }, []);
   const onConnect     = useCallback((conn)    => { setEdges((c) => addEdge({ ...conn, animated: true }, c)); setIsDirty(true); }, []);
 
   /* ── Save ────────────────────────────────────────────────────────────── */
@@ -1174,29 +1180,48 @@ export default function WorkflowEditor() {
   /* Render                                                                   */
   /* ─────────────────────────────────────────────────────────────────────── */
   return (
-    <div className="h-screen overflow-hidden bg-[#f1f3f8] font-body text-on-background flex flex-col">
+    <div className="h-screen overflow-hidden bg-[#f1f3f8] dark:bg-[#0a0a0f] font-body text-gray-900 dark:text-white flex flex-col">
 
       {/* ── Top bar ───────────────────────────────────────────────────── */}
-      <header className="h-14 shrink-0 px-4 sm:px-5 bg-surface border-b border-outline-variant/10 shadow-sm flex items-center justify-between gap-3 z-30">
+      <header className="h-14 shrink-0 px-4 sm:px-5 bg-white/90 dark:bg-[#0d0d14]/95 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between gap-3 z-30">
         {/* Left: back + name */}
         <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={() => navigate('/workflows')}
-            className="p-2 rounded-xl text-on-surface-variant hover:text-primary hover:bg-primary/8 transition-all"
+            className="p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:text-[#ff4a00] hover:bg-[#ff4a00]/10 transition-all"
             aria-label="Back to workflows"
           >
             <Icon name="arrow_back" className="text-[20px]" />
           </button>
-          <div className="hidden xs:block w-px h-5 bg-outline-variant/20" />
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-on-background truncate max-w-[200px] sm:max-w-sm">
-              {workflow?.name || 'Loading…'}
-            </p>
-            <p className="text-[10px] text-on-surface-variant hidden sm:block">
-              {isDirty
-                ? <span className="text-amber-600 font-semibold">Unsaved changes</span>
-                : <span>All changes saved</span>}
-            </p>
+          <div className="hidden xs:block w-px h-5 bg-gray-200 dark:bg-white/10" />
+          <div className="flex items-center gap-3 ml-2 min-w-0 group relative">
+            <div className="relative flex items-center">
+              <input 
+                type="text"
+                value={workflow?.name || ''}
+                onChange={(e) => {
+                  setWorkflow(prev => ({ ...prev, name: e.target.value }));
+                  setIsDirty(true);
+                }}
+                className="text-sm font-bold text-gray-900 dark:text-white bg-gray-100/50 dark:bg-white/5 hover:bg-gray-200/50 dark:hover:bg-white/10 focus:bg-white dark:focus:bg-[#0d0d14] outline-none focus:ring-2 focus:ring-[#ff4a00]/50 rounded-xl px-3 py-1.5 transition-all w-[180px] sm:w-[280px] truncate pr-8 border border-transparent focus:border-[#ff4a00]/30 shadow-sm"
+                placeholder="Name this workflow..."
+              />
+              <Icon name="edit" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[14px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            </div>
+
+            <div className="hidden sm:flex items-center h-full">
+              {isDirty ? (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ff4a00]/10 border border-[#ff4a00]/20 shadow-[0_0_10px_rgba(255,74,0,0.1)]">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#ff4a00] animate-pulse" />
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-[#ff4a00]">Unsaved</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                  <Icon name="check" className="text-[10px] text-gray-500 dark:text-gray-400" />
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-gray-500 dark:text-gray-400">Saved</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1206,13 +1231,13 @@ export default function WorkflowEditor() {
             workflow?.status === 'active'
               ? 'bg-primary/10 text-primary'
               : workflow?.status === 'archived'
-              ? 'bg-surface-container-highest text-on-surface-variant'
+              ? 'bg-gray-200 dark:bg-[#222230] text-gray-500 dark:text-gray-400'
               : 'bg-amber-50 text-amber-700'
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${workflow?.status === 'active' ? 'bg-primary animate-pulse' : 'bg-current opacity-60'}`} />
             {workflow?.status || 'draft'}
           </span>
-          <span className="text-[10px] text-on-surface-variant font-label">
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-label">
             {nodes.length} node{nodes.length !== 1 ? 's' : ''} · {edges.length} connection{edges.length !== 1 ? 's' : ''}
           </span>
         </div>
@@ -1222,7 +1247,7 @@ export default function WorkflowEditor() {
           {/* Mobile: palette */}
           <button
             onClick={() => setMobileSheet('palette')}
-            className="xl:hidden p-2.5 rounded-xl bg-surface-container-low text-primary hover:bg-primary/10 transition-all"
+            className="xl:hidden p-2.5 rounded-xl bg-gray-50 dark:bg-[#12121a] text-primary hover:bg-primary/10 transition-all"
             aria-label="Add action"
           >
             <Icon name="add" className="text-[20px]" />
@@ -1232,9 +1257,9 @@ export default function WorkflowEditor() {
           <button
             onClick={() => save()}
             disabled={isSaving || !workflow}
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-surface-container-low text-on-background text-xs font-bold hover:bg-surface-container-high border border-outline-variant/15 disabled:opacity-50 transition-all"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-50 dark:bg-[#12121a] text-gray-900 dark:text-white text-xs font-bold hover:bg-gray-100 dark:bg-[#1a1a24] border border-gray-200 dark:border-white/10 disabled:opacity-50 transition-all"
           >
-            <Icon name="save" className="text-[17px] text-on-surface-variant" />
+            <Icon name="save" className="text-[17px] opacity-70" />
             {isSaving ? 'Saving…' : 'Save'}
           </button>
 
@@ -1244,7 +1269,8 @@ export default function WorkflowEditor() {
             whileTap={{ scale: 0.97 }}
             onClick={run}
             disabled={isRunning || !workflow}
-            className="btn-primary px-4 py-2 rounded-xl text-xs font-bold shadow-md hover:shadow-lg disabled:opacity-60 inline-flex items-center gap-1.5 transition-all"
+            className="text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm hover:shadow-md disabled:opacity-60 inline-flex items-center gap-1.5 transition-all"
+            style={{ background: 'linear-gradient(135deg,#ff4a00,#e04200)', boxShadow: '0 0 15px rgba(255,74,0,0.2)' }}
           >
             <Icon
               name={isRunning ? 'sync' : 'play_arrow'}
@@ -1259,10 +1285,10 @@ export default function WorkflowEditor() {
       <div className="flex-1 min-h-0 flex">
 
         {/* Left palette — desktop only */}
-        <aside className="hidden xl:flex w-72 shrink-0 flex-col bg-surface border-r border-outline-variant/10 overflow-y-auto">
+        <aside className="hidden xl:flex w-72 shrink-0 flex-col bg-white dark:bg-[#0d0d14] border-r border-gray-200 dark:border-white/10 overflow-y-auto">
           <div className="px-5 pt-5 pb-2">
-            <p className="font-headline text-base font-bold text-on-background">Build workflow</p>
-            <p className="mt-1 text-xs text-on-surface-variant leading-relaxed">Add actions, then draw connections between handles.</p>
+            <p className="font-headline text-base font-bold text-gray-900 dark:text-white">Build workflow</p>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">Add actions, then draw connections between handles.</p>
           </div>
           <div className="px-5 pb-5 mt-4">
             <Palette onAdd={addNode} onChangeTrigger={changeTrigger} currentTriggerType={nodes.find(n => n.id === 'trigger')?.data?.type || 'TRIGGER_MANUAL'} />
@@ -1272,13 +1298,13 @@ export default function WorkflowEditor() {
         {/* Canvas */}
         <main className="flex-1 min-w-0 relative">
           {/* Floating step counter */}
-          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 rounded-2xl border border-outline-variant/15 bg-surface/95 backdrop-blur px-3.5 py-2 shadow-sm">
+          <div className="absolute top-4 left-4 z-10 flex items-center gap-2 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0a0a0f]/95 backdrop-blur px-3.5 py-2 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-primary" />
-            <p className="text-[11px] font-bold text-on-background">
+            <p className="text-[11px] font-bold text-gray-900 dark:text-white">
               {nodes.length} step{nodes.length !== 1 ? 's' : ''}
             </p>
-            <span className="w-px h-3 bg-outline-variant/30 mx-1" />
-            <p className="text-[10px] text-on-surface-variant">drag to arrange · connect handles to link</p>
+            <span className="w-px h-3 bg-gray-300 dark:bg-white/15 mx-1" />
+            <p className="text-[10px] text-gray-500 dark:text-gray-400">drag to arrange · connect handles to link</p>
           </div>
 
           <ReactFlow
@@ -1298,18 +1324,17 @@ export default function WorkflowEditor() {
               color="#94a3b8"
               gap={28}
               size={1}
-              style={{ backgroundColor: '#eef0f5' }}
             />
             <Controls
-              className="!border-outline-variant/15 !bg-surface !shadow-md !rounded-2xl overflow-hidden"
+              className="!border-gray-200 dark:border-white/10 !bg-white dark:bg-[#0a0a0f] !shadow-md !rounded-2xl overflow-hidden"
             />
           </ReactFlow>
         </main>
 
         {/* Right inspector — lg+ */}
-        <aside className="hidden lg:flex w-[300px] shrink-0 flex-col bg-surface border-l border-outline-variant/10">
+        <aside className="hidden lg:flex w-[300px] shrink-0 flex-col bg-white dark:bg-[#0d0d14] border-l border-gray-200 dark:border-white/10">
           {/* Tabs */}
-          <div className="flex border-b border-outline-variant/10 bg-surface-container-lowest">
+          <div className="flex border-b border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14]">
             {[{ key: 'configure', label: 'Configure', icon: 'tune' }, { key: 'activity', label: 'Activity', icon: 'receipt_long' }].map(({ key, label, icon }) => (
               <button
                 key={key}
@@ -1318,7 +1343,7 @@ export default function WorkflowEditor() {
                   'flex-1 flex items-center justify-center gap-1.5 py-3 text-[10px] uppercase tracking-wider font-bold border-b-2 transition-all',
                   activeTab === key
                     ? 'border-primary text-primary bg-primary/5'
-                    : 'border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest',
+                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:bg-[#222230]',
                 ].join(' ')}
               >
                 <Icon name={icon} className="text-[15px]" />
@@ -1337,11 +1362,11 @@ export default function WorkflowEditor() {
           </div>
 
           {/* Save button at bottom of inspector */}
-          <div className="px-5 py-4 border-t border-outline-variant/10 bg-surface-container-lowest">
+          <div className="px-5 py-4 border-t border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14]">
             <button
               onClick={() => save()}
               disabled={isSaving || !workflow || !isDirty}
-              className="w-full py-2.5 rounded-xl bg-surface-container-high text-on-background text-xs font-bold hover:bg-surface-container-highest border border-outline-variant/10 disabled:opacity-40 transition-all flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 rounded-xl bg-gray-100 dark:bg-[#1a1a24] text-gray-900 dark:text-white text-xs font-bold hover:bg-gray-200 dark:bg-[#222230] border border-gray-200 dark:border-white/10 disabled:opacity-40 transition-all flex items-center justify-center gap-1.5"
             >
               <Icon name="save" className="text-[16px]" />
               {isSaving ? 'Saving…' : isDirty ? 'Save changes' : 'All saved'}
@@ -1366,16 +1391,16 @@ export default function WorkflowEditor() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-              className="lg:hidden fixed bottom-0 left-0 right-0 z-[70] max-h-[80vh] overflow-y-auto rounded-t-3xl bg-surface shadow-2xl"
+              className="lg:hidden fixed bottom-0 left-0 right-0 z-[70] max-h-[80vh] overflow-y-auto rounded-t-3xl bg-white dark:bg-[#0a0a0f] shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-surface px-5 pt-4 pb-2 flex items-center justify-between border-b border-outline-variant/10">
-                <div className="w-10 h-1 rounded-full bg-outline-variant/30 mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
-                <p className="font-label text-[10px] uppercase tracking-widest font-bold text-on-surface-variant">
+              <div className="sticky top-0 bg-white dark:bg-[#0a0a0f] px-5 pt-4 pb-2 flex items-center justify-between border-b border-gray-200 dark:border-white/10">
+                <div className="w-10 h-1 rounded-full bg-gray-300 dark:bg-white/15 mx-auto absolute left-1/2 -translate-x-1/2 top-3" />
+                <p className="font-label text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400">
                   {mobileSheet === 'palette' ? 'Add actions' : 'Configure'}
                 </p>
-                <button onClick={() => setMobileSheet(null)} className="p-1.5 rounded-xl hover:bg-surface-container-highest transition-colors">
-                  <Icon name="close" className="text-[18px] text-on-surface-variant" />
+                <button onClick={() => setMobileSheet(null)} className="p-1.5 rounded-xl hover:bg-gray-200 dark:bg-[#222230] transition-colors">
+                  <Icon name="close" className="text-[18px] text-gray-500 dark:text-gray-400" />
                 </button>
               </div>
               <div className="p-5">

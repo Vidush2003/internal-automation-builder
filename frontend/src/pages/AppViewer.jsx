@@ -118,7 +118,7 @@ export default function AppViewer() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-on-surface-variant font-label text-sm uppercase tracking-widest">Loading App...</div>
+        <div className="animate-pulse text-gray-500 dark:text-gray-400 font-label text-sm uppercase tracking-widest">Loading App...</div>
       </div>
     );
   }
@@ -132,16 +132,16 @@ export default function AppViewer() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-container-lowest flex flex-col">
+    <div className="min-h-screen bg-white dark:bg-[#0d0d14] flex flex-col">
       {/* App Header */}
-      <header className="bg-surface-container-low border-b border-outline-variant/20 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <header className="bg-gray-50 dark:bg-[#12121a] border-b border-gray-200 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/workflows')} className="w-10 h-10 rounded-full hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors">
+          <button onClick={() => navigate('/workflows')} className="w-10 h-10 rounded-full hover:bg-gray-100 dark:bg-[#1a1a24] flex items-center justify-center text-gray-500 dark:text-gray-400 transition-colors">
             <Icon>arrow_back</Icon>
           </button>
           <div>
-            <h1 className="font-headline font-bold text-xl text-on-background">{workflow.name}</h1>
-            <p className="font-body text-sm text-on-surface-variant">{workflow.description}</p>
+            <h1 className="font-headline font-bold text-xl text-gray-900 dark:text-white">{workflow.name}</h1>
+            <p className="font-body text-sm text-gray-500 dark:text-gray-400">{workflow.description}</p>
           </div>
         </div>
         <span className="px-3 py-1 bg-primary/10 text-primary font-label text-xs uppercase tracking-widest rounded-full font-bold">
@@ -153,15 +153,15 @@ export default function AppViewer() {
       <main className="flex-1 max-w-4xl w-full mx-auto p-6 sm:p-10 grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Form Section */}
         <section className="flex flex-col">
-          <div className="bg-white rounded-2xl border border-outline-variant/20 p-6 shadow-sm flex-1">
+          <div className="bg-white rounded-2xl border border-gray-200 dark:border-white/10 p-6 shadow-sm flex-1">
             <h2 className="font-headline font-bold text-lg mb-2">Input Variables</h2>
-            <p className="text-sm text-on-surface-variant mb-6">Provide the initial payload for this workflow. Use JSON format.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Provide the initial payload for this workflow. Use JSON format.</p>
             
             <form onSubmit={handleRun} className="flex flex-col gap-4 h-full">
               <textarea
                 value={payload}
                 onChange={(e) => setPayload(e.target.value)}
-                className="w-full h-64 bg-surface-container font-mono text-sm p-4 rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
+                className="w-full h-64 bg-gray-100 dark:bg-[#161620] font-mono text-sm p-4 rounded-xl border border-gray-300 dark:border-white/15 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all resize-none"
                 placeholder="{}"
                 disabled={running}
                 spellCheck="false"
@@ -186,13 +186,13 @@ export default function AppViewer() {
 
         {/* Real-time Status Section */}
         <section className="flex flex-col">
-          <div className="bg-surface-container-low rounded-2xl border border-outline-variant/20 p-6 shadow-sm flex-1 flex flex-col">
+          <div className="bg-gray-50 dark:bg-[#12121a] rounded-2xl border border-gray-200 dark:border-white/10 p-6 shadow-sm flex-1 flex flex-col">
             <h2 className="font-headline font-bold text-lg mb-2">Real-Time Progress</h2>
-            <p className="text-sm text-on-surface-variant mb-4">Powered by WebSockets</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Powered by WebSockets</p>
             
-            <div className="flex-1 bg-surface-container-lowest rounded-xl border border-outline-variant/10 p-4 overflow-y-auto font-mono text-xs flex flex-col gap-2">
+            <div className="flex-1 bg-white dark:bg-[#0d0d14] rounded-xl border border-gray-200 dark:border-white/10 p-4 overflow-y-auto font-mono text-xs flex flex-col gap-2">
               {logs.length === 0 ? (
-                <div className="text-on-surface-variant opacity-50 m-auto text-center">
+                <div className="text-gray-500 dark:text-gray-400 opacity-50 m-auto text-center">
                   Waiting for execution to start...
                 </div>
               ) : (
@@ -205,7 +205,7 @@ export default function AppViewer() {
                       className={`p-2 rounded border whitespace-pre-wrap ${
                         log.type === 'success' ? 'bg-primary/5 border-primary/20 text-primary' :
                         log.type === 'error' ? 'bg-error/5 border-error/20 text-error' :
-                        'bg-surface-container border-outline-variant/10 text-on-background'
+                        'bg-gray-100 dark:bg-[#161620] border-gray-200 dark:border-white/10 text-gray-900 dark:text-white'
                       }`}
                     >
                       {log.msg}
@@ -219,7 +219,7 @@ export default function AppViewer() {
               <div className={`mt-4 p-3 rounded-xl border flex items-center justify-center font-bold text-sm uppercase tracking-widest ${
                 status === 'completed' ? 'bg-primary/10 border-primary/20 text-primary' :
                 status === 'failed' ? 'bg-error/10 border-error/20 text-error' :
-                'bg-secondary-container border-outline-variant/20 text-on-secondary-container animate-pulse'
+                'bg-secondary-container border-gray-200 dark:border-white/10 text-on-secondary-container animate-pulse'
               }`}>
                 {status === 'running' ? 'Running...' : status === 'completed' ? 'Success' : 'Failed'}
               </div>

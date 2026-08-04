@@ -81,6 +81,16 @@ app.use('/api/logs', logRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/analytics', analyticsRoutes);
+
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to the AutomataX API! The API is running correctly. Please visit the frontend application to interact with the platform.',
+    docs: '/api-docs',
+    health: '/health'
+  });
+});
+
 app.use((req, res, next) => {
   next(new ApiError(404, `Route not found: ${req.method} ${req.originalUrl}`));
 });

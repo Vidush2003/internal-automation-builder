@@ -27,7 +27,7 @@ export default function MobileDrawer({ open, onClose, children }) {
     >
       <div className="absolute inset-0 bg-scrim/40" onClick={onClose} />
       <div
-        className={`absolute left-0 top-0 h-full w-72 max-w-[85vw] bg-surface-container-low shadow-2xl border-r border-outline-variant/15 transition-transform duration-300 ${
+        className={`absolute left-0 top-0 h-full w-72 max-w-[85vw] bg-gray-50 dark:bg-[#12121a] shadow-2xl border-r border-gray-200 dark:border-white/10 transition-transform duration-300 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
         role="dialog"
@@ -36,7 +36,7 @@ export default function MobileDrawer({ open, onClose, children }) {
         <button
           onClick={onClose}
           aria-label="Close navigation"
-          className="absolute top-4 right-4 p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest"
+          className="absolute top-4 right-4 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:bg-[#222230]"
         >
           <span className="material-symbols-outlined">close</span>
         </button>

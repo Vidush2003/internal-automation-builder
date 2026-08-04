@@ -10,7 +10,7 @@ function NavItem({ icon, label, active, onClick }) {
         className={`w-full px-4 py-3 flex items-center gap-3 font-label uppercase tracking-widest text-[10px] transition-all duration-300 rounded-xl ${
           active
             ? 'bg-secondary-container text-primary font-bold shadow-sm'
-            : 'text-on-secondary-container hover:bg-surface-container-highest'
+            : 'text-on-secondary-container hover:bg-gray-200 dark:bg-[#222230]'
         }`}
       >
         <span className="material-symbols-outlined" style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>
@@ -44,7 +44,7 @@ export default function Sidebar({ onCreateWorkflow, extra, onNavigate }) {
   return (
     <div className="flex flex-col h-full p-6 pt-20">
       <div className="mb-7 px-4">
-        <p className="font-label uppercase tracking-[0.18em] text-[10px] font-bold text-on-surface-variant">Workspace navigation</p>
+        <p className="font-label uppercase tracking-[0.18em] text-[10px] font-bold text-gray-500 dark:text-gray-400">Workspace navigation</p>
       </div>
 
       <ul className="space-y-2">
@@ -84,7 +84,7 @@ export default function Sidebar({ onCreateWorkflow, extra, onNavigate }) {
 
         <button
           onClick={logout}
-          className="w-full py-2.5 rounded-xl border border-outline-variant/30 text-on-surface-variant hover:text-error hover:bg-error/5 transition-all text-[10px] uppercase font-semibold tracking-wider flex justify-center items-center gap-1.5"
+          className="w-full py-2.5 rounded-xl border border-gray-300 dark:border-white/15 text-gray-500 dark:text-gray-400 hover:text-error hover:bg-error/5 transition-all text-[10px] uppercase font-semibold tracking-wider flex justify-center items-center gap-1.5"
         >
           <span className="material-symbols-outlined text-sm">logout</span>
           Sign Out

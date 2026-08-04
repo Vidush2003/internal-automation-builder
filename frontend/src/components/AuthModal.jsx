@@ -68,7 +68,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="absolute inset-0 bg-surface-container-lowest/60 backdrop-blur-md"
+            className="absolute inset-0 bg-white dark:bg-[#0d0d14]/60 backdrop-blur-md"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -79,12 +79,12 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-            className="relative w-full max-w-md bg-surface p-8 sm:p-10 rounded-xl flex flex-col gap-8 border border-outline-variant/35 shadow-2xl z-10"
+            className="relative w-full max-w-md bg-white dark:bg-[#0a0a0f] p-8 sm:p-10 rounded-xl flex flex-col gap-8 border border-gray-200 dark:border-white/10/35 shadow-2xl z-10"
             layout
           >
             <button 
               onClick={onClose}
-              className="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface p-2 rounded-full hover:bg-surface-container-highest transition-colors z-20"
+              className="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200 p-2 rounded-full hover:bg-gray-200 dark:bg-[#222230] transition-colors z-20"
               aria-label="Close"
             >
               <span className="material-symbols-outlined text-[20px]">close</span>
@@ -92,8 +92,8 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
 
             {/* Brand Header */}
             <motion.div layout className="text-center mt-2">
-              <h2 className="font-headline font-bold text-3xl text-on-background tracking-tight">automataX</h2>
-              <p className="font-label text-on-surface-variant mt-2 text-sm tracking-wide">
+              <h2 className="font-headline font-bold text-3xl text-gray-900 dark:text-white tracking-tight">automataX</h2>
+              <p className="font-label text-gray-500 dark:text-gray-400 mt-2 text-sm tracking-wide">
                 {mode === 'login' ? 'Enter your credentials to continue' : 'Create your account to get started'}
               </p>
             </motion.div>
@@ -122,11 +122,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                   onSubmit={handleLogin}
                 >
                   <div className="flex flex-col gap-2">
-                    <label className="font-label text-sm text-on-surface" htmlFor="login-email">Email Address</label>
+                    <label className="font-label text-sm text-gray-700 dark:text-gray-200" htmlFor="login-email">Email Address</label>
                     <input
                       type="email"
                       id="login-email"
-                      className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
+                      className="w-full bg-white dark:bg-[#0d0d14] border border-gray-300 dark:border-white/15 text-gray-700 dark:text-gray-200 placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
                       placeholder="name@example.com"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
@@ -134,11 +134,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="font-label text-sm text-on-surface" htmlFor="login-password">Password</label>
+                    <label className="font-label text-sm text-gray-700 dark:text-gray-200" htmlFor="login-password">Password</label>
                     <input
                       type="password"
                       id="login-password"
-                      className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
+                      className="w-full bg-white dark:bg-[#0d0d14] border border-gray-300 dark:border-white/15 text-gray-700 dark:text-gray-200 placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
                       placeholder="••••••••"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
@@ -156,7 +156,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     </button>
                   </div>
                   <div className="text-center">
-                    <p className="font-body text-sm text-on-surface-variant">
+                    <p className="font-body text-sm text-gray-500 dark:text-gray-400">
                       Don't have an account?{' '}
                       <button 
                         type="button" 
@@ -179,11 +179,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                   onSubmit={handleRegister}
                 >
                   <div className="flex flex-col gap-2">
-                    <label className="font-label text-sm text-on-surface" htmlFor="reg-name">Full Name</label>
+                    <label className="font-label text-sm text-gray-700 dark:text-gray-200" htmlFor="reg-name">Full Name</label>
                     <input
                       type="text"
                       id="reg-name"
-                      className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
+                      className="w-full bg-white dark:bg-[#0d0d14] border border-gray-300 dark:border-white/15 text-gray-700 dark:text-gray-200 placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
                       placeholder="John Doe"
                       value={regName}
                       onChange={(e) => setRegName(e.target.value)}
@@ -191,11 +191,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="font-label text-sm text-on-surface" htmlFor="reg-email">Email Address</label>
+                    <label className="font-label text-sm text-gray-700 dark:text-gray-200" htmlFor="reg-email">Email Address</label>
                     <input
                       type="email"
                       id="reg-email"
-                      className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
+                      className="w-full bg-white dark:bg-[#0d0d14] border border-gray-300 dark:border-white/15 text-gray-700 dark:text-gray-200 placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
                       placeholder="name@example.com"
                       value={regEmail}
                       onChange={(e) => setRegEmail(e.target.value)}
@@ -203,11 +203,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="font-label text-sm text-on-surface" htmlFor="reg-password">Password</label>
+                    <label className="font-label text-sm text-gray-700 dark:text-gray-200" htmlFor="reg-password">Password</label>
                     <input
                       type="password"
                       id="reg-password"
-                      className="w-full bg-surface-container-lowest border border-outline-variant/30 text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
+                      className="w-full bg-white dark:bg-[#0d0d14] border border-gray-300 dark:border-white/15 text-gray-700 dark:text-gray-200 placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-3 px-4 font-body outline-none transition-colors"
                       placeholder="••••••••"
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
@@ -225,7 +225,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     </button>
                   </div>
                   <div className="text-center">
-                    <p className="font-body text-sm text-on-surface-variant">
+                    <p className="font-body text-sm text-gray-500 dark:text-gray-400">
                       Already have an account?{' '}
                       <button 
                         type="button" 

@@ -66,15 +66,15 @@ export function OverlayProvider({ children }) {
               role="status"
               className={`pointer-events-auto flex items-start gap-3 px-4 py-3 rounded-xl shadow-lg border font-body text-sm animate-toast-in ${
                 t.variant === 'success'
-                  ? 'bg-surface border-primary/20 text-on-surface'
+                  ? 'bg-white dark:bg-[#0a0a0f] border-primary/20 text-gray-700 dark:text-gray-200'
                   : t.variant === 'error'
-                  ? 'bg-surface border-error/30 text-on-surface'
-                  : 'bg-surface border-outline-variant/30 text-on-surface'
+                  ? 'bg-white dark:bg-[#0a0a0f] border-error/30 text-gray-700 dark:text-gray-200'
+                  : 'bg-white dark:bg-[#0a0a0f] border-gray-300 dark:border-white/15 text-gray-700 dark:text-gray-200'
               }`}
             >
               <span
                 className={`material-symbols-outlined text-[18px] mt-0.5 ${
-                  t.variant === 'success' ? 'text-primary' : t.variant === 'error' ? 'text-error' : 'text-on-surface-variant'
+                  t.variant === 'success' ? 'text-primary' : t.variant === 'error' ? 'text-error' : 'text-gray-500 dark:text-gray-400'
                 }`}
                 style={{ fontVariationSettings: "'FILL' 1" }}
               >
@@ -83,7 +83,7 @@ export function OverlayProvider({ children }) {
               <span className="flex-1 leading-snug">{t.message}</span>
               <button
                 onClick={() => dismiss(t.id)}
-                className="text-on-surface-variant hover:text-on-surface"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-200"
                 aria-label="Dismiss notification"
               >
                 <span className="material-symbols-outlined text-[16px]">close</span>
@@ -99,17 +99,17 @@ export function OverlayProvider({ children }) {
               className="absolute inset-0 bg-scrim/40 backdrop-blur-[2px]"
               onClick={() => resolveConfirm(false)}
             />
-            <div className="relative w-full max-w-sm bg-surface rounded-xl shadow-lg border border-outline-variant/20 p-6 flex flex-col gap-4">
+            <div className="relative w-full max-w-sm bg-white dark:bg-[#0a0a0f] rounded-xl shadow-lg border border-gray-200 dark:border-white/10 p-6 flex flex-col gap-4">
               {confirmState.title && (
-                <h3 className="font-headline text-lg font-semibold text-on-background">{confirmState.title}</h3>
+                <h3 className="font-headline text-lg font-semibold text-gray-900 dark:text-white">{confirmState.title}</h3>
               )}
               {confirmState.description && (
-                <p className="font-body text-sm text-on-surface-variant leading-relaxed">{confirmState.description}</p>
+                <p className="font-body text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{confirmState.description}</p>
               )}
               <div className="flex justify-end gap-3 mt-2">
                 <button
                   onClick={() => resolveConfirm(false)}
-                  className="px-4 py-2 rounded-lg font-label text-sm font-semibold text-on-surface-variant hover:bg-surface-container-highest transition-colors"
+                  className="px-4 py-2 rounded-lg font-label text-sm font-semibold text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:bg-[#222230] transition-colors"
                 >
                   Cancel
                 </button>

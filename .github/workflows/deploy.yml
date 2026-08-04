@@ -1,0 +1,33 @@
+name: Deploy to Oracle VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allows you to manually trigger the workflow from the Actions tab
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Increase timeout just in case the ARM server is under load
+          timeout: 120s
+          script: |
+            echo "Starting deployment..."
+            # Navigate to the project directory
+            cd ~/internal-automation-builder
+            
+            # Pull the latest changes from the main branch
+            git pull origin main
+            
+            # Rebuild and restart the Docker containers in the background
+            docker-compose up -d --build
+            
+            echo "Deployment successful!"
