@@ -66,25 +66,26 @@ function AnalyticsTicker() {
     `🔄 Total Executions: ${stats.totalExecutions}`,
     `🛡️ Success Rate: ${stats.successRate}`,
     `📋 Active Workflows: ${stats.totalWorkflows}`,
-    `⚡ Avg Execution: ${stats.avgExecutionSeconds}`,
-    `🔄 Total Executions: ${stats.totalExecutions}`,
-    `🛡️ Success Rate: ${stats.successRate}`,
-    `📋 Active Workflows: ${stats.totalWorkflows}`,
   ];
 
   return (
-    <div className="bg-gray-950 overflow-hidden py-2">
-      <motion.div
-        animate={{ x: ['0%', '-50%'] }}
-        transition={{ ease: 'linear', duration: 35, repeat: Infinity }}
-        className="flex gap-16 w-max px-8"
-      >
-        {items.map((item, i) => (
-          <span key={i} className="text-[11px] font-mono font-semibold tracking-widest text-gray-400 uppercase whitespace-nowrap">
+    <div className="bg-[#FFF8F3]/90 dark:bg-gray-950 backdrop-blur-sm border-b border-[#ff4a00]/10 dark:border-transparent overflow-hidden py-2">
+      <style>{`
+        @keyframes ticker {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-ticker {
+          animation: ticker 35s linear infinite;
+        }
+      `}</style>
+      <div className="flex gap-16 w-max px-8 animate-ticker">
+        {[...items, ...items].map((item, i) => (
+          <span key={i} className="text-[11px] font-mono font-semibold tracking-widest text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">
             {item}
           </span>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -123,7 +124,7 @@ function NavBar({ onLogin, onRegister }) {
   ];
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'bg-white/90 dark:bg-[#0d0d14]/95 border-b border-gray-200 dark:border-white/10 shadow-sm dark:shadow-lg dark:shadow-black/30 backdrop-blur-xl' : 'bg-transparent'} py-4`}>
+    <header className={`sticky top-0 z-50 transition-all duration-200 ${scrolled ? 'bg-[#FFFCF9]/95 dark:bg-[#0d0d14]/95 border-b border-[#ff4a00]/10 dark:border-white/10 shadow-sm dark:shadow-lg dark:shadow-black/30 backdrop-blur-xl' : 'bg-transparent'} py-4`}>
       <div className="max-w-6xl mx-auto px-5 sm:px-8 h-auto flex items-center justify-between gap-6">
         {/* Logo */}
         <a href="#top" className="shrink-0">
@@ -184,15 +185,15 @@ function NavBar({ onLogin, onRegister }) {
 /* ─── Hero ───────────────────────────────────────────────────── */
 function Hero({ onRegister }) {
   return (
-    <section id="top" className="relative pt-36 pb-28 px-5 overflow-hidden bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
+    <section id="top" className="relative pt-36 pb-28 px-5 overflow-hidden transition-colors duration-200">
       <div className="max-w-4xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-gray-200 dark:border-[#9d4edd]/30 bg-gray-50 dark:bg-[#9d4edd]/10 text-gray-500 dark:text-purple-400 text-xs font-semibold dark:font-bold mb-8"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#ff4a00]/20 bg-[#ff4a00]/5 text-[#ff4a00] text-xs font-semibold mb-8"
         >
-          <span className="w-2 h-2 rounded-full bg-green-500 dark:bg-[#9d4edd] dark:animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-[#ff4a00] animate-pulse" />
           Live platform · No credit card needed
         </motion.div>
 
@@ -203,7 +204,7 @@ function Hero({ onRegister }) {
           className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight dark:tracking-tighter text-gray-950 dark:text-white leading-[1.05] mb-6"
         >
           Automate anything.<br />
-          <span className="text-[#ff4a00] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-br dark:from-[#9d4edd] dark:to-[#ff4a00]">Build visually.</span>
+          <span className="text-[#ff4a00]">Build visually.</span>
         </motion.h1>
 
         <motion.p
@@ -269,20 +270,22 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-5 bg-gray-50 dark:bg-[#13151a] border-y border-gray-100 dark:border-white/5 transition-colors duration-200">
+    <section id="how-it-works" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         <FadeUp className="text-center mb-16">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">How it works</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">How it works</p>
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white">Up and running in minutes</h2>
         </FadeUp>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((s, i) => (
             <FadeUp key={s.n} delay={i * 0.08}>
-              <div className="bg-white dark:bg-[#1e2130] rounded-2xl p-6 border border-gray-100 dark:border-white/8 shadow-sm dark:shadow-lg h-full dark:hover:border-purple-500/30 transition-colors">
+              <div className="bg-white dark:bg-[#1e2130] rounded-2xl p-6 border border-gray-100 dark:border-white/8 shadow-sm dark:shadow-lg h-full hover:shadow-md hover:-translate-y-0.5 hover:border-[#ff4a00]/20 dark:hover:border-[#ff4a00]/30 transition-all">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-xs font-black text-gray-300 dark:text-gray-300 font-mono">{s.n}</span>
-                  <span className="material-symbols-outlined text-[#ff4a00] text-[22px]">{s.icon}</span>
+                  <span className="w-7 h-7 rounded-lg bg-[#ff4a00]/10 dark:bg-white/5 flex items-center justify-center">
+                    <span className="text-xs font-black text-[#ff4a00] dark:text-gray-400 font-mono">{s.n}</span>
+                  </span>
+                  <span className="material-symbols-outlined text-[#ff4a00] dark:text-[#ff4a00] text-[22px]">{s.icon}</span>
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white text-[15px] mb-2">{s.title}</h3>
                 <p className="text-sm text-gray-500 dark:text-white/40 leading-relaxed">{s.desc}</p>
@@ -334,11 +337,11 @@ function CanvasSection() {
   };
 
   return (
-    <section id="features" className="py-24 px-5 bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
+    <section id="features" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Left: text */}
         <SlideIn from="left">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">Visual Canvas</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">Visual Canvas</p>
           <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-5 leading-snug">
             Build complex flows<br />without writing a line.
           </h2>
@@ -353,8 +356,8 @@ function CanvasSection() {
               { icon: 'bolt', t: 'Real-time status per node' },
             ].map(({ icon, t }) => (
               <li key={t} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-400">
-                <span className="w-7 h-7 rounded-lg bg-[#ff4a00]/8 dark:bg-[#9d4edd]/15 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[#ff4a00] dark:text-purple-400 text-[15px]">{icon}</span>
+                <span className="w-5 h-5 rounded-full bg-[#ff4a00]/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[#ff4a00] text-[13px]">check</span>
                 </span>
                 {t}
               </li>
@@ -370,17 +373,17 @@ function CanvasSection() {
             style={{ minHeight: 420 }}
           >
             {/* Dot grid */}
-            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#9d4edd18_1px,transparent_1px)] [background-size:24px_24px] dark:[background-size:28px_28px] opacity-50 dark:opacity-100 [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:none]" />
+            <div className="absolute inset-0 bg-[radial-gradient(#d1d5db_1px,transparent_1px)] dark:bg-[radial-gradient(#9d4edd18_1px,transparent_1px)] [background-size:24px_24px] dark:[background-size:28px_28px] opacity-70 dark:opacity-100" />
 
             {/* Top bar */}
-            <div className="relative z-10 flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-white/5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/70" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500/70" />
-              <span className="ml-3 text-[10px] text-white/30 font-mono tracking-widest">WORKFLOW CANVAS</span>
+            <div className="relative z-10 flex items-center gap-2 px-4 py-3 border-b border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+              <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+              <span className="ml-3 text-[10px] text-gray-400 dark:text-white/30 font-mono tracking-widest">WORKFLOW CANVAS</span>
               <div className="ml-auto flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[10px] text-emerald-400 font-mono">LIVE</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono">LIVE</span>
               </div>
             </div>
 
@@ -390,7 +393,6 @@ function CanvasSection() {
               xmlns="http://www.w3.org/2000/svg"
               style={{ top: 48 }}
             >
-              {/* Node 1 → Node 2 bezier */}
               <motion.path
                 d="M 310 110 C 360 110, 360 200, 310 200"
                 stroke="#2259bf"
@@ -398,10 +400,9 @@ function CanvasSection() {
                 fill="none"
                 strokeDasharray="6 4"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={inView ? { pathLength: 1, opacity: 0.7 } : {}}
+                animate={inView ? { pathLength: 1, opacity: 0.6 } : {}}
                 transition={{ duration: 0.8, delay: 0.6 }}
               />
-              {/* Node 2 → Node 3 bezier */}
               <motion.path
                 d="M 310 200 C 360 200, 360 290, 310 290"
                 stroke="#9d4edd"
@@ -409,7 +410,7 @@ function CanvasSection() {
                 fill="none"
                 strokeDasharray="6 4"
                 initial={{ pathLength: 0, opacity: 0 }}
-                animate={inView ? { pathLength: 1, opacity: 0.7 } : {}}
+                animate={inView ? { pathLength: 1, opacity: 0.6 } : {}}
                 transition={{ duration: 0.8, delay: 1.0 }}
               />
             </svg>
@@ -424,36 +425,35 @@ function CanvasSection() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={inView ? { opacity: 1, x: 0 } : {}}
                     transition={{ delay: 0.2 + i * 0.18, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="bg-[#1e2130] border border-white/10 rounded-xl overflow-hidden shadow-lg w-[280px]"
-                    style={{ boxShadow: `0 0 0 1px ${n.color}22, 0 4px 20px rgba(0,0,0,0.4)` }}
+                    className="bg-white dark:bg-[#1e2130] border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden shadow-md dark:shadow-lg w-[280px]"
+                    style={{ boxShadow: `0 0 0 1px ${n.color}18, 0 4px 16px rgba(0,0,0,0.08)` }}
                   >
                     {/* Node header */}
-                    <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: `${n.color}22`, borderBottom: `1px solid ${n.color}33` }}>
+                    <div className="flex items-center gap-2.5 px-3 py-2.5" style={{ background: `${n.color}12`, borderBottom: `1px solid ${n.color}25` }}>
                       <span className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ background: n.color }}>
                         <span className="material-symbols-outlined text-white text-[13px]">{n.icon}</span>
                       </span>
-                      <span className="text-white text-[12px] font-bold flex-1">{n.label}</span>
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: n.color, background: `${n.color}20`, border: `1px solid ${n.color}40` }}>{n.tag}</span>
-                      {/* Output handle */}
-                      <div className="w-3 h-3 rounded-full border-2 shrink-0 ml-1" style={{ borderColor: n.color, background: '#13151a' }} />
+                      <span className="text-gray-900 dark:text-white text-[12px] font-bold flex-1">{n.label}</span>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ color: n.color, background: `${n.color}15`, border: `1px solid ${n.color}30` }}>{n.tag}</span>
+                      <div className="w-3 h-3 rounded-full border-2 shrink-0 ml-1" style={{ borderColor: n.color, background: 'white' }} />
                     </div>
 
                     {/* Node body */}
                     <div className="px-3 py-2.5 flex flex-col gap-1.5">
                       {n.fields.map(f => (
                         <div key={f.k} className="flex items-center gap-2">
-                          <span className="text-[10px] text-white/30 font-mono w-20 shrink-0">{f.k}</span>
-                          <span className="text-[10px] text-white/70 font-mono truncate">{f.v}</span>
+                          <span className="text-[10px] text-gray-400 dark:text-white/30 font-mono w-20 shrink-0">{f.k}</span>
+                          <span className="text-[10px] text-gray-700 dark:text-white/70 font-mono truncate">{f.v}</span>
                         </div>
                       ))}
                     </div>
 
                     {/* Node footer: status */}
-                    <div className="px-3 py-2 border-t border-white/5 flex items-center gap-2">
+                    <div className="px-3 py-2 border-t border-gray-100 dark:border-white/5 flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full shrink-0 ${s.dot}`} />
                       <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${s.text}`}>{s.label}</span>
-                      {n.status === 'completed' && <span className="ml-auto text-[9px] text-white/20 font-mono">142ms</span>}
-                      {n.status === 'running' && <span className="ml-auto text-[9px] text-amber-400/50 font-mono">running…</span>}
+                      {n.status === 'completed' && <span className="ml-auto text-[9px] text-gray-400 dark:text-white/20 font-mono">142ms</span>}
+                      {n.status === 'running' && <span className="ml-auto text-[9px] text-amber-500 dark:text-amber-400/50 font-mono">running…</span>}
                     </div>
                   </motion.div>
                 );
@@ -487,34 +487,41 @@ function AISection() {
   }, [inView]);
 
   return (
-    <section className="py-24 px-5 bg-gray-950">
+    <section className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Visual */}
         <SlideIn from="left">
-          <div ref={ref} className="bg-black border border-white/10 rounded-2xl p-6 shadow-2xl">
-            <div className="flex items-center gap-2 mb-5">
-              <span className="material-symbols-outlined text-purple-400 text-[20px]">auto_awesome</span>
-              <span className="text-white font-semibold text-sm">AI Workflow Generator</span>
-            </div>
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 min-h-[110px]">
-              <p className="text-gray-300 text-sm leading-relaxed font-mono">
-                {text}
-                <span className="inline-block w-2 h-[1em] bg-purple-400 animate-pulse align-middle ml-0.5" />
-              </p>
-            </div>
-            <div className="mt-4">
-              <span className="text-[11px] text-gray-600 font-mono">Powered by Gemini AI · Log in to generate</span>
+          <div ref={ref} className="bg-white dark:bg-[#1e2130] border border-gray-200 dark:border-white/8 rounded-2xl p-6 shadow-sm dark:shadow-xl">
+            {/* Header */}
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-[#ff4a00] flex items-center justify-center shadow-md shadow-[#ff4a00]/30">
+                <span className="material-symbols-outlined text-white text-[16px]">auto_awesome</span>
+              </div>
+              <span className="text-gray-900 dark:text-white font-bold text-sm">AI Workflow Generator</span>
+              <span className="ml-auto px-2 py-0.5 rounded-full bg-[#ff4a00]/10 text-[#ff4a00] text-[9px] font-bold uppercase tracking-widest border border-[#ff4a00]/20">Gemini</span>
             </div>
 
-            {/* Generated preview */}
-            <div className="mt-5 border-t border-white/10 pt-5 flex flex-wrap gap-2">
+            {/* Prompt area */}
+            <div className="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/8 rounded-xl p-4 min-h-[110px]">
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed font-mono">
+                {text}
+                <span className="inline-block w-2 h-[1em] bg-[#ff4a00] animate-pulse align-middle ml-0.5 rounded-sm" />
+              </p>
+            </div>
+
+            <div className="mt-3">
+              <span className="text-[11px] text-gray-400 dark:text-gray-600 font-mono">Powered by Gemini AI · Log in to generate</span>
+            </div>
+
+            {/* Generated node pills */}
+            <div className="mt-5 border-t border-gray-100 dark:border-white/8 pt-5 flex flex-wrap gap-2">
               {['Webhook Trigger', 'HTTP Request', 'AI Summarize', 'Send Slack Msg'].map((t, i) => (
                 <motion.span
                   key={t}
                   initial={{ opacity: 0, scale: 0.85 }}
                   animate={inView && text.length === fullText.length ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 0.2 + i * 0.1 }}
-                  className="px-3 py-1 rounded-full bg-white/10 text-gray-300 text-[11px] font-mono border border-white/10"
+                  className="px-3 py-1 rounded-full bg-[#ff4a00]/8 dark:bg-white/5 text-[#ff4a00] dark:text-gray-300 text-[11px] font-mono border border-[#ff4a00]/20 dark:border-white/10"
                 >
                   {t}
                 </motion.span>
@@ -525,18 +532,18 @@ function AISection() {
 
         {/* Text */}
         <SlideIn from="right" delay={0.1}>
-          <p className="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">Generative AI</p>
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-5 leading-snug">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">Generative AI</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-5 leading-snug">
             Describe it.<br />AutomataX builds it.
           </h2>
-          <p className="text-base text-gray-400 leading-relaxed mb-8">
+          <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
             No need to drag anything. Type what you need in plain English and our Gemini-powered AI instantly generates a complete, fully connected workflow and drops it right on the canvas.
           </p>
           <ul className="flex flex-col gap-3">
             {['Natural language to full workflow', 'Nodes pre-configured with your intent', 'Edit and extend the AI result', 'Works across all 11 node types'].map(t => (
-              <li key={t} className="flex items-center gap-3 text-sm text-gray-300">
-                <span className="w-5 h-5 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-purple-400 text-[13px]">check</span>
+              <li key={t} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                <span className="w-5 h-5 rounded-full bg-[#ff4a00]/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[#ff4a00] text-[13px]">check</span>
                 </span>
                 {t}
               </li>
@@ -557,7 +564,7 @@ function TriggersSection() {
   ];
 
   return (
-    <section className="py-24 px-5 bg-gray-50 dark:bg-[#0a0a0f] border-y border-gray-100 dark:border-transparent transition-colors duration-200">
+    <section className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-transparent transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         <FadeUp className="text-center mb-14">
           <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">Triggers</p>
@@ -605,7 +612,7 @@ function LogicSection() {
   ];
 
   return (
-    <section id="integrations" className="py-24 px-5 bg-white dark:bg-[#13151a] border-y border-transparent dark:border-white/5 transition-colors duration-200">
+    <section id="integrations" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         <FadeUp className="text-center mb-14">
           <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">Node Library</p>
@@ -616,7 +623,7 @@ function LogicSection() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {nodeTypes.map((n, i) => (
             <FadeUp key={n.label} delay={Math.floor(i / 5) * 0.1 + (i % 5) * 0.05}>
-              <div className="bg-gray-50 dark:bg-[#1e2130] border border-gray-100 dark:border-white/8 rounded-xl p-4 text-center hover:bg-white dark:hover:bg-[#252840] hover:shadow-md dark:hover:border-purple-500/30 dark:hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-default h-full flex flex-col items-center">
+              <div className="bg-white/70 dark:bg-[#1e2130] border border-[#ff4a00]/10 dark:border-white/8 rounded-xl p-4 text-center hover:bg-white hover:shadow-md hover:border-[#ff4a00]/25 dark:hover:bg-[#252840] dark:hover:border-[#ff4a00]/30 dark:hover:shadow-lg hover:-translate-y-0.5 transition-all cursor-default h-full flex flex-col items-center">
                 <div className="w-10 h-10 rounded-xl mb-3 flex items-center justify-center" style={{ background: `${n.color}18` }}>
                   <span className="material-symbols-outlined text-[20px]" style={{ color: n.color }}>{n.icon}</span>
                 </div>
@@ -658,25 +665,30 @@ function ExecutionSection() {
     return () => { timers.forEach(clearTimeout); clearTimeout(reset); };
   }, [inView]);
 
-  const colorMap = { info: 'text-gray-300', dim: 'text-gray-600', success: 'text-emerald-400', done: 'text-emerald-300 font-bold' };
+  const colorMap = {
+    info: 'text-gray-700 dark:text-gray-300',
+    dim: 'text-gray-400 dark:text-gray-600',
+    success: 'text-emerald-600 dark:text-emerald-400',
+    done: 'text-[#ff4a00] dark:text-[#ff6a30] font-bold'
+  };
 
   return (
-    <section id="execution" className="py-24 px-5 bg-gray-950">
+    <section id="execution" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Text */}
         <SlideIn from="left">
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-3">Real-time Execution</p>
-          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white mb-5 leading-snug">
+          <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">Real-time Execution</p>
+          <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-gray-900 dark:text-white mb-5 leading-snug">
             Total visibility.<br />Zero guesswork.
           </h2>
-          <p className="text-base text-gray-400 leading-relaxed mb-8">
+          <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed mb-8">
             Every execution streams live via WebSocket. Inspect the exact output of every node — timing, status, and payload. When something fails, you'll know exactly where and why.
           </p>
           <ul className="flex flex-col gap-3">
             {['Live WebSocket execution stream', 'Per-node timing and output inspection', 'Full error traces with node context', 'Analytics dashboard with trend charts'].map(t => (
-              <li key={t} className="flex items-center gap-3 text-sm text-gray-300">
-                <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-emerald-400 text-[13px]">check</span>
+              <li key={t} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
+                <span className="w-5 h-5 rounded-full bg-[#ff4a00]/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-[#ff4a00] text-[13px]">check</span>
                 </span>
                 {t}
               </li>
@@ -686,13 +698,13 @@ function ExecutionSection() {
 
         {/* Live terminal */}
         <SlideIn from="right" delay={0.1}>
-          <div ref={ref} className="bg-black rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+          <div ref={ref} className="bg-gray-900 dark:bg-[#0d0f14] rounded-2xl overflow-hidden border border-gray-200 dark:border-white/8 shadow-xl dark:shadow-2xl">
             {/* Terminal chrome */}
-            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/10 bg-white/5">
-              <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-              <span className="ml-3 text-[11px] text-gray-500 font-mono">AutomataX execution log</span>
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/10 bg-gray-800 dark:bg-white/5">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
+              <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
+              <span className="ml-3 text-[11px] text-gray-400 font-mono">AutomataX execution log</span>
             </div>
             {/* Log lines */}
             <div className="p-5 font-mono text-[12px] min-h-[240px] flex flex-col gap-2">
@@ -708,7 +720,7 @@ function ExecutionSection() {
                 </motion.p>
               ))}
               {running && logs.length < 9 && (
-                <span className="inline-block w-2 h-3.5 bg-gray-400/70 animate-pulse" />
+                <span className="inline-block w-2 h-3.5 bg-[#ff4a00]/60 animate-pulse rounded-sm" />
               )}
             </div>
           </div>
@@ -731,16 +743,13 @@ function CTA({ onRegister }) {
   ];
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-white dark:bg-[#0a0a0f] transition-colors duration-200">
-      {/* Ambient glow */}
-      <div className="hidden dark:block absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full opacity-25 blur-[120px]" style={{ background: 'radial-gradient(ellipse, #ff4a00 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[200px] rounded-full opacity-10 blur-[80px]" style={{ background: '#9d4edd' }} />
-        <div className="absolute top-0 right-0 w-[300px] h-[200px] rounded-full opacity-10 blur-[80px]" style={{ background: '#2259bf' }} />
+    <section ref={ref} className="relative overflow-hidden border-t border-[#ff4a00]/8 dark:border-transparent dark:bg-[#0a0a0f] dark:from-[#0a0a0f] dark:via-[#0a0a0f] dark:to-[#0a0a0f] transition-colors duration-200">
+      {/* CTA glow — stronger in light mode for drama */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full opacity-20 dark:opacity-25 blur-[120px]" style={{ background: 'radial-gradient(ellipse, #ff4a00 0%, transparent 70%)' }} />
       </div>
-
-      {/* Dot grid */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff06_1px,transparent_1px)] [background-size:24px_24px] dark:[background-size:22px_22px] opacity-50 dark:opacity-100 [mask-image:linear-gradient(to_bottom,white,transparent)] dark:[mask-image:none]" />
+      {/* Denser dot grid on CTA only */}
+      <div className="absolute inset-0 bg-[radial-gradient(#ff4a0015_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff06_1px,transparent_1px)] [background-size:20px_20px] opacity-80 dark:opacity-100" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-5 py-32 flex flex-col items-center text-center">
 
@@ -852,29 +861,40 @@ export default function Landing() {
   const handleSuccess = () => { setAuthMode(null); navigate('/dashboard'); };
 
   return (
-    <div className="bg-white dark:bg-[#0a0a0f] text-gray-900 dark:text-white font-body transition-colors duration-200">
-      <AnalyticsTicker />
-      <NavBar onLogin={() => handleAuth('login')} onRegister={() => handleAuth('register')} />
-      <Hero onRegister={() => handleAuth('register')} />
-      <HowItWorks />
-      <CanvasSection />
-      <AISection />
-      <TriggersSection />
-      <LogicSection />
-      <ExecutionSection />
-      <CTA onRegister={() => handleAuth('register')} />
-      <Footer />
+    <div className="relative bg-[#FFFCF9] dark:bg-[#0a0a0f] text-gray-900 dark:text-white font-body transition-colors duration-200">
+      {/* Shared full-page background — light mode only */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Warm dot grid */}
+        <div className="absolute inset-0 bg-[radial-gradient(#ff4a0010_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff06_1px,transparent_1px)] [background-size:28px_28px]" />
+        {/* Subtle warm ambient — top right */}
+        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full opacity-25 dark:opacity-0 blur-[120px]" style={{ background: 'radial-gradient(ellipse, #ff4a0018 0%, transparent 70%)' }} />
+        {/* Subtle warm ambient — bottom left */}
+        <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-0 blur-[100px]" style={{ background: 'radial-gradient(ellipse, #ff4a0012 0%, transparent 70%)' }} />
+      </div>
+      <div className="relative z-10">
+        <AnalyticsTicker />
+        <NavBar onLogin={() => handleAuth('login')} onRegister={() => handleAuth('register')} />
+        <Hero onRegister={() => handleAuth('register')} />
+        <HowItWorks />
+        <CanvasSection />
+        <AISection />
+        <TriggersSection />
+        <LogicSection />
+        <ExecutionSection />
+        <CTA onRegister={() => handleAuth('register')} />
+        <Footer />
 
-      <AnimatePresence>
-        {authMode && (
-          <AuthModal
-            key={authMode}
-            isOpen={Boolean(authMode)}
-            defaultMode={authMode}
-            onClose={() => setAuthMode(null)}
-          />
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {authMode && (
+            <AuthModal
+              key={authMode}
+              isOpen={Boolean(authMode)}
+              defaultMode={authMode}
+              onClose={() => setAuthMode(null)}
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
