@@ -79,9 +79,13 @@ function AnalyticsTicker() {
           animation: ticker 35s linear infinite;
         }
       `}</style>
-      <div className="flex gap-16 w-max px-8 animate-ticker">
+      <div style={{ display: 'flex', width: 'max-content' }} className="animate-ticker">
         {[...items, ...items].map((item, i) => (
-          <span key={i} className="text-[11px] font-mono font-semibold tracking-widest text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap">
+          <span
+            key={i}
+            style={{ marginRight: '5rem' }}
+            className="text-[11px] font-mono font-semibold tracking-widest text-gray-500 dark:text-gray-400 uppercase whitespace-nowrap"
+          >
             {item}
           </span>
         ))}
