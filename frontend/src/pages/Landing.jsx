@@ -867,8 +867,8 @@ export default function Landing() {
 
         {/* ── Dot grid — adapts per mode ── */}
         <div className="absolute inset-0
-          bg-[radial-gradient(#ff4a000d_1px,transparent_1px)]
-          dark:bg-[radial-gradient(#ffffff05_1px,transparent_1px)]
+          bg-[radial-gradient(#c4a882_1.5px,transparent_1.5px)]
+          dark:bg-[radial-gradient(#ffffff18_1.5px,transparent_1.5px)]
           [background-size:28px_28px]" />
 
         {/* ════════════════════════════════
@@ -908,6 +908,11 @@ export default function Landing() {
           style={{ background: '#10b981' }} />
 
       </div>
+      {/* Frosted overlay — softens dot grid behind all content */}
+      <div className="fixed inset-0 z-[5] pointer-events-none
+        bg-[#FFFCF9]/58 dark:bg-[#0a0a0f]/60
+        backdrop-blur-[3px]" />
+
       <div className="relative z-10">
         <AnalyticsTicker />
         <NavBar onLogin={() => handleAuth('login')} onRegister={() => handleAuth('register')} />
