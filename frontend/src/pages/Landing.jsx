@@ -270,7 +270,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
+    <section id="how-it-works" className="py-24 px-5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         <FadeUp className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">How it works</p>
@@ -337,7 +337,7 @@ function CanvasSection() {
   };
 
   return (
-    <section id="features" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
+    <section id="features" className="py-24 px-5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Left: text */}
         <SlideIn from="left">
@@ -487,7 +487,7 @@ function AISection() {
   }, [inView]);
 
   return (
-    <section className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
+    <section className="py-24 px-5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Visual */}
         <SlideIn from="left">
@@ -564,7 +564,7 @@ function TriggersSection() {
   ];
 
   return (
-    <section className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-transparent transition-colors duration-200">
+    <section className="py-24 px-5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         <FadeUp className="text-center mb-14">
           <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] mb-3">Triggers</p>
@@ -612,7 +612,7 @@ function LogicSection() {
   ];
 
   return (
-    <section id="integrations" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
+    <section id="integrations" className="py-24 px-5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto">
         <FadeUp className="text-center mb-14">
           <p className="text-xs font-bold uppercase tracking-widest text-[#ff4a00] dark:text-purple-400 mb-3">Node Library</p>
@@ -673,7 +673,7 @@ function ExecutionSection() {
   };
 
   return (
-    <section id="execution" className="py-24 px-5 border-t border-[#ff4a00]/8 dark:border-white/5 transition-colors duration-200">
+    <section id="execution" className="py-24 px-5 transition-colors duration-200">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
         {/* Text */}
         <SlideIn from="left">
@@ -743,7 +743,7 @@ function CTA({ onRegister }) {
   ];
 
   return (
-    <section ref={ref} className="relative overflow-hidden border-t border-[#ff4a00]/8 dark:border-transparent dark:bg-[#0a0a0f] dark:from-[#0a0a0f] dark:via-[#0a0a0f] dark:to-[#0a0a0f] transition-colors duration-200">
+    <section ref={ref} className="relative overflow-hidden transition-colors duration-200">
       {/* CTA glow — stronger in light mode for drama */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full opacity-20 dark:opacity-25 blur-[120px]" style={{ background: 'radial-gradient(ellipse, #ff4a00 0%, transparent 70%)' }} />
