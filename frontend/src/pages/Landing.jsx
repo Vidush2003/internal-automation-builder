@@ -865,11 +865,6 @@ export default function Landing() {
       {/* Shared full-page background canvas */}
       <div className="fixed inset-0 pointer-events-none z-0">
 
-        {/* ── Dot grid — adapts per mode ── */}
-        <div className="absolute inset-0
-          bg-[radial-gradient(#c4a882_1.5px,transparent_1.5px)]
-          dark:bg-[radial-gradient(#ffffff18_1.5px,transparent_1.5px)]
-          [background-size:28px_28px]" />
 
         {/* ════════════════════════════════
             LIGHT MODE: orange + yellow
@@ -908,10 +903,6 @@ export default function Landing() {
           style={{ background: '#10b981' }} />
 
       </div>
-      {/* Frosted overlay — softens dot grid behind all content */}
-      <div className="fixed inset-0 z-[5] pointer-events-none
-        bg-[#FFFCF9]/58 dark:bg-[#0a0a0f]/60
-        backdrop-blur-[3px]" />
 
       <div className="relative z-10">
         <AnalyticsTicker />
