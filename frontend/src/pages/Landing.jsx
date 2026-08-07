@@ -862,14 +862,51 @@ export default function Landing() {
 
   return (
     <div className="relative bg-[#FFFCF9] dark:bg-[#0a0a0f] text-gray-900 dark:text-white font-body transition-colors duration-200">
-      {/* Shared full-page background — light mode only */}
+      {/* Shared full-page background canvas */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Warm dot grid */}
-        <div className="absolute inset-0 bg-[radial-gradient(#ff4a0010_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff06_1px,transparent_1px)] [background-size:28px_28px]" />
-        {/* Subtle warm ambient — top right */}
-        <div className="absolute -top-32 -right-32 w-[600px] h-[600px] rounded-full opacity-25 dark:opacity-0 blur-[120px]" style={{ background: 'radial-gradient(ellipse, #ff4a0018 0%, transparent 70%)' }} />
-        {/* Subtle warm ambient — bottom left */}
-        <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] rounded-full opacity-20 dark:opacity-0 blur-[100px]" style={{ background: 'radial-gradient(ellipse, #ff4a0012 0%, transparent 70%)' }} />
+
+        {/* ── Dot grid — adapts per mode ── */}
+        <div className="absolute inset-0
+          bg-[radial-gradient(#ff4a000d_1px,transparent_1px)]
+          dark:bg-[radial-gradient(#ffffff05_1px,transparent_1px)]
+          [background-size:28px_28px]" />
+
+        {/* ════════════════════════════════
+            LIGHT MODE: orange + yellow
+        ════════════════════════════════ */}
+        {/* Orange — top right */}
+        <div className="absolute -top-24 -right-24 w-[640px] h-[640px] rounded-full
+          opacity-30 dark:opacity-0 blur-[130px]"
+          style={{ background: 'radial-gradient(ellipse, #ff4a00 0%, transparent 65%)' }} />
+        {/* Yellow — bottom left */}
+        <div className="absolute -bottom-20 -left-20 w-[560px] h-[560px] rounded-full
+          opacity-25 dark:opacity-0 blur-[110px]"
+          style={{ background: 'radial-gradient(ellipse, #f59e0b 0%, transparent 65%)' }} />
+        {/* Soft yellow centre bloom */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+          w-[800px] h-[400px] rounded-full opacity-10 dark:opacity-0 blur-[140px]"
+          style={{ background: 'radial-gradient(ellipse, #fbbf24 0%, transparent 70%)' }} />
+
+        {/* ════════════════════════════════
+            DARK MODE: purple + green
+        ════════════════════════════════ */}
+        {/* Purple — top left */}
+        <div className="absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full
+          opacity-0 dark:opacity-[0.12] blur-[140px]"
+          style={{ background: 'radial-gradient(ellipse, #7c3aed 0%, transparent 65%)' }} />
+        {/* Green — bottom right */}
+        <div className="absolute -bottom-40 -right-40 w-[700px] h-[700px] rounded-full
+          opacity-0 dark:opacity-[0.10] blur-[140px]"
+          style={{ background: 'radial-gradient(ellipse, #059669 0%, transparent 65%)' }} />
+        {/* Purple bleed — top right corner */}
+        <div className="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full
+          opacity-0 dark:opacity-[0.07] blur-[100px]"
+          style={{ background: '#9d4edd' }} />
+        {/* Green bleed — mid left */}
+        <div className="absolute top-1/2 -left-20 w-[350px] h-[350px] rounded-full
+          opacity-0 dark:opacity-[0.06] blur-[90px]"
+          style={{ background: '#10b981' }} />
+
       </div>
       <div className="relative z-10">
         <AnalyticsTicker />
