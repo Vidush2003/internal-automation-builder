@@ -97,7 +97,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                 </div>
                 <h2 className="font-black text-2xl text-gray-900 dark:text-white tracking-tight">AutomataX</h2>
                 <p className="text-gray-500 dark:text-gray-400 mt-1.5 text-sm">
-                  {mode === 'login' ? 'Welcome back — sign in to continue' : 'Create your free account'}
+                  {mode === 'login' ? 'Welcome back â€” sign in to continue' : 'Create your free account'}
                 </p>
               </div>
               <div className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1 gap-1">
@@ -134,7 +134,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="login-password">Password</label>
-                      <input type="password" id="login-password" className={inputCls} placeholder="••••••••" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required />
+                      <input type="password" id="login-password" className={inputCls} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} required />
                     </div>
                     <button type="submit" disabled={loading}
                       className="mt-1 w-full py-3.5 rounded-xl bg-[#ff4a00] text-white font-bold text-sm shadow-lg shadow-[#ff4a00]/30 hover:bg-[#e04200] hover:-translate-y-0.5 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
@@ -165,7 +165,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="reg-password">Password</label>
-                      <input type="password" id="reg-password" className={inputCls} placeholder="••••••••" value={regPassword} onChange={e => setRegPassword(e.target.value)} required />
+                      <input type="password" id="reg-password" className={inputCls} placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" value={regPassword} onChange={e => setRegPassword(e.target.value)} required />
                     </div>
                     <button type="submit" disabled={loading}
                       className="mt-1 w-full py-3.5 rounded-xl bg-[#ff4a00] text-white font-bold text-sm shadow-lg shadow-[#ff4a00]/30 hover:bg-[#e04200] hover:-translate-y-0.5 active:scale-[0.98] transition-all disabled:opacity-60 flex items-center justify-center gap-2"
