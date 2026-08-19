@@ -48,7 +48,7 @@ function AnalyticsTicker() {
   });
 
   useEffect(() => {
-    fetch('/api/analytics/public')
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/analytics/public`)
       .then(r => r.json())
       .then(d => {
         if (!d.error) setStats({
