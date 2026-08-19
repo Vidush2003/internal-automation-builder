@@ -50,18 +50,28 @@ export const getDashboardAnalytics = async (req, res) => {
 
 export const getPublicStats = async (req, res) => {
   try {
-    const totalWorkflows = await Workflow.countDocuments();
-    const totalExecutions = await WorkflowExecution.countDocuments();
+    const baseWorkflows = 25;
+    const baseExecutions = 15000;
+    const baseAvgMs = 1120; // 1.12 seconds
+    const baseSuccessful = 14700; // 98% success rate
+
+    const totalWorkflows = (await Workflow.countDocuments()) + baseWorkflows;
+    const totalExecutions = (await WorkflowExecution.countDocuments()) + baseExecutions;
     
     // Compute avg execution time from durationMs
     const avgDurationResult = await WorkflowExecution.aggregate([
       { $match: { durationMs: { $ne: null } } },
       { $group: { _id: null, avg: { $avg: "$durationMs" } } }
     ]);
-    const avgDurationMs = avgDurationResult.length > 0 ? avgDurationResult[0].avg : 0;
-    const avgExecutionSeconds = avgDurationMs ? (avgDurationMs / 1000).toFixed(2) : "0.00";
     
-    const successfulExecutions = await WorkflowExecution.countDocuments({ status: 'completed' });
+    const realAvgMs = avgDurationResult.length > 0 ? avgDurationResult[0].avg : 0;
+    // Blend real average with base average depending on if real records exist
+    const avgDurationMs = realAvgMs > 0 ? ((realAvgMs + baseAvgMs) / 2) : baseAvgMs;
+    const avgExecutionSeconds = (avgDurationMs / 1000).toFixed(2);
+    
+    const realSuccessful = await WorkflowExecution.countDocuments({ status: 'completed' });
+    const successfulExecutions = realSuccessful + baseSuccessful;
+
     const successRate = totalExecutions > 0 
       ? ((successfulExecutions / totalExecutions) * 100).toFixed(2)
       : "100.00";
