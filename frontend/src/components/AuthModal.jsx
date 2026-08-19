@@ -38,7 +38,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
     finally { setLoading(false); }
   };
 
-  const inputCls = 'w-full rounded-xl py-3 px-4 text-sm outline-none transition-all bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-[#ff4a00]/50 focus:ring-2 focus:ring-[#ff4a00]/15';
+  const inputCls = 'w-full rounded-xl py-3.5 px-4 text-[15px] outline-none transition-all bg-black/[0.03] dark:bg-white/[0.04] border border-black/10 dark:border-white/10 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-400 focus:border-[#ff4a00]/70 focus:bg-white dark:focus:bg-black/50 focus:ring-4 focus:ring-[#ff4a00]/15';
 
   return (
     <AnimatePresence>
@@ -49,8 +49,8 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-black/25 dark:bg-black/55"
-            style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)' }}
+            className="absolute inset-0 bg-black/25 dark:bg-black/60"
+            style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
             onClick={onClose}
           />
           <motion.div
@@ -59,7 +59,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
             exit={{ opacity: 0, scale: 0.7 }}
             transition={{ duration: 0.5 }}
             className="absolute w-[480px] h-[480px] rounded-full pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse, #ff4a0025 0%, transparent 65%)', filter: 'blur(50px)' }}
+            style={{ background: 'radial-gradient(ellipse, rgba(255,74,0,0.18) 0%, transparent 65%)', filter: 'blur(50px)' }}
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.93, y: 30 }}
@@ -68,19 +68,21 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
             transition={{ type: 'spring', damping: 24, stiffness: 300, delay: 0.05 }}
             className="relative w-full max-w-md z-10 rounded-2xl overflow-hidden"
             style={{
-              background: 'rgba(255,252,249,0.82)',
-              backdropFilter: 'blur(28px)',
-              WebkitBackdropFilter: 'blur(28px)',
-              border: '1px solid rgba(255,255,255,0.55)',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,74,0,0.08), inset 0 1px 0 rgba(255,255,255,0.7)',
+              background: 'rgba(255,255,255,0.85)',
+              backdropFilter: 'blur(32px)',
+              WebkitBackdropFilter: 'blur(32px)',
+              border: '1px solid rgba(255,255,255,0.6)',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,74,0,0.05), inset 0 1px 0 rgba(255,255,255,1)',
             }}
           >
             <div
               className="hidden dark:block absolute inset-0 pointer-events-none rounded-2xl"
               style={{
-                background: 'rgba(10,10,15,0.75)',
-                backdropFilter: 'blur(28px)',
-                WebkitBackdropFilter: 'blur(28px)',
+                background: 'rgba(22, 22, 26, 0.85)',
+                backdropFilter: 'blur(32px)',
+                WebkitBackdropFilter: 'blur(32px)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.08)'
               }}
             />
             <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff4a00] to-transparent" />
