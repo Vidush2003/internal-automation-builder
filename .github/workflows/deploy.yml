@@ -24,8 +24,9 @@ jobs:
             # Navigate to the project directory
             cd ~/internal-automation-builder
             
-            # Pull the latest changes from the main branch
-            git pull origin main
+            # Fetch the latest changes and hard reset to match main perfectly
+            git fetch --all
+            git reset --hard origin/main
             
             # Rebuild and restart the Docker containers in the background
             docker-compose up -d --build
