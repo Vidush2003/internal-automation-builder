@@ -25,7 +25,7 @@ function formatRelativeTime(dateInput) {
 
 /* ─── Skeleton ─────────────────────────────────── */
 function Skeleton({ className = '' }) {
-  return <div className={`animate-pulse rounded-2xl bg-gray-100 dark:bg-[#1a1a24] ${className}`} />;
+  return <div className={`animate-pulse rounded-2xl bg-white/40 dark:bg-white/5 backdrop-blur-xl ${className}`} />;
 }
 
 /* ─── Stat Card ────────────────────────────────── */
@@ -35,7 +35,7 @@ function StatCard({ label, value, icon, primary, footer, delay = 0 }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden bg-white dark:bg-[#0d0d14] rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 p-6"
+      className="relative overflow-hidden bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] hover:shadow-lg hover:border-[#ff4a00]/30 hover:-translate-y-0.5 transition-all duration-300 p-6"
     >
       <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-[#ff4a00]/5 pointer-events-none" />
       <div className="flex items-start justify-between mb-6">
@@ -60,7 +60,7 @@ function ActivityItem({ log, delay = 0 }) {
       initial={{ opacity: 0, x: 10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-white dark:bg-[#0d0d14] rounded-2xl border border-gray-200 dark:border-white/10 hover:border-[#ff4a00]/30 hover:shadow-sm transition-all p-4"
+      className="bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl rounded-2xl border border-white/40 dark:border-white/10 hover:border-[#ff4a00]/30 hover:shadow-md transition-all p-4"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <span className="font-label text-[9px] uppercase tracking-widest px-2 py-1 bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-white/70 rounded-lg font-bold">
@@ -97,7 +97,7 @@ function QuickActions({ onNewWorkflow }) {
           className={`flex flex-col items-center justify-center gap-2 p-4 sm:p-5 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md text-center ${
             primary
               ? 'text-white border-transparent'
-              : 'bg-white dark:bg-[#0d0d14] border-gray-200 dark:border-white/10 hover:border-[#ff4a00]/30 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              : 'bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/40 dark:border-white/10 hover:border-[#ff4a00]/30 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
           style={primary ? { background: 'linear-gradient(135deg,#ff4a00,#e04200)', boxShadow: '0 0 15px rgba(255,74,0,0.2)' } : {}}
         >
@@ -113,7 +113,7 @@ function QuickActions({ onNewWorkflow }) {
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white dark:bg-[#0d0d14] px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 shadow-lg">
+      <div className="bg-white/80 dark:bg-[#1a1a24]/90 backdrop-blur-xl px-4 py-3 rounded-xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)]">
         <p className="font-label text-[10px] uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-2">{label}</p>
         {payload.map((entry, index) => (
           <p key={index} className="font-body text-sm font-bold" style={{ color: entry.color }}>
@@ -262,7 +262,7 @@ export default function Dashboard() {
               <h3 className="font-headline text-xl font-bold text-gray-900 dark:text-white mt-0.5">Last 7 Days</h3>
             </div>
           </div>
-          <div className="bg-white dark:bg-[#0d0d14] rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm p-6 h-64 sm:h-80">
+          <div className="bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl rounded-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] p-6 h-64 sm:h-80">
             {loading ? (
               <Skeleton className="h-full w-full" />
             ) : chartData.length === 0 ? (
@@ -299,7 +299,7 @@ export default function Dashboard() {
             {loading ? (
               <>{[...Array(3)].map((_, i) => <Skeleton key={i} className="h-24" />)}</>
             ) : logs.length === 0 ? (
-              <div className="bg-white dark:bg-[#0d0d14] p-6 rounded-2xl border border-gray-200 dark:border-white/10 text-sm text-gray-500 dark:text-gray-400 text-center">
+              <div className="bg-white/60 dark:bg-white/[0.03] backdrop-blur-2xl p-6 rounded-2xl border border-white/40 dark:border-white/10 text-sm text-gray-500 dark:text-gray-400 text-center">
                 No activity yet.
               </div>
             ) : (

@@ -130,7 +130,7 @@ function AppSidebar({ onCreateWorkflow, extra }) {
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-60 shrink-0 h-screen bg-gray-50/50 dark:bg-[#0d0d14] border-r border-gray-200 dark:border-white/10 overflow-y-auto z-20">
+    <aside className="hidden md:flex flex-col w-60 shrink-0 h-screen bg-white/40 dark:bg-black/20 backdrop-blur-xl border-r border-gray-200/50 dark:border-white/5 overflow-y-auto z-20">
       {/* Brand */}
       <div className="flex items-center gap-2.5 px-5 py-5 border-b border-gray-200 dark:border-white/10">
         <img src="/logo/automataX.png" alt="automataX" className="h-6 w-auto object-contain dark:brightness-200" />
@@ -206,7 +206,7 @@ function MobileNav({ open, onClose, onCreateWorkflow }) {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 350 }}
-            className="fixed top-0 left-0 h-full w-72 z-50 bg-white dark:bg-[#0a0a0f] flex flex-col shadow-2xl md:hidden"
+            className="fixed top-0 left-0 h-full w-72 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-2xl flex flex-col shadow-2xl border-r border-gray-200/50 dark:border-white/5 md:hidden"
           >
             <div className="flex items-center justify-between px-5 py-5 border-b border-gray-200 dark:border-white/10">
               <img src="/logo/automataX.png" alt="automataX" className="h-6 w-auto object-contain dark:brightness-200" />
@@ -273,7 +273,7 @@ export default function AppLayout({ children, title, subtitle, extra }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white dark:bg-[#0a0a0f] font-body text-gray-900 dark:text-white transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-[#FFF8F3] dark:bg-gray-950 font-body text-gray-900 dark:text-white transition-colors duration-200">
       {/* Desktop Sidebar */}
       <AppSidebar onCreateWorkflow={handleCreateWorkflow} extra={extra} />
 
@@ -287,7 +287,7 @@ export default function AppLayout({ children, title, subtitle, extra }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Top bar */}
-        <header className="bg-white/90 dark:bg-[#0d0d14] backdrop-blur-xl border-b border-gray-200 dark:border-white/10 shadow-sm dark:shadow-none flex items-center justify-between px-4 sm:px-6 h-14 shrink-0 z-30">
+        <header className="bg-white/40 dark:bg-black/20 backdrop-blur-2xl border-b border-gray-200/50 dark:border-white/5 shadow-sm dark:shadow-none flex items-center justify-between px-4 sm:px-6 h-14 shrink-0 z-30">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMobileNavOpen(true)}
