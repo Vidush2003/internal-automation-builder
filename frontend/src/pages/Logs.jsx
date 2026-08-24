@@ -1,4 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import AppLayout from '../components/AppLayout';
+import { apiClient } from '../api/client';
 
 export default function Logs() {
   const [logs, setLogs] = useState([]);
