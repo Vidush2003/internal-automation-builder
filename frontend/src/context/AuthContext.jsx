@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password, role = 'Super Admin') => {
+  const register = async (name, email, password, role = 'SUPER_ADMIN') => {
     try {
       const data = await apiClient('/auth/register', {
         method: 'POST',
@@ -67,8 +67,59 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const forgotPassword = async (email) => {
+    try {
+      await apiClient('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email })
+      });
+    } catch (err) {
+      throw new Error(err.message || 'Failed to send reset link');
+    }
+  };
+
+  const resetPassword = async (token, password) => {
+    try {
+      await apiClient('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token, password })
+      });
+    } catch (err) {
+      throw new Error(err.message || 'Failed to reset password');
+    }
+  };
+
+  const requestMagicLink = async (email) => {
+    try {
+      await apiClient('/auth/magic-link', {
+        method: 'POST',
+        body: JSON.stringify({ email })
+      });
+    } catch (err) {
+      throw new Error(err.message || 'Failed to send magic link');
+    }
+  };
+
+  const verifyMagicLink = async (token) => {
+    try {
+      const data = await apiClient('/auth/magic-link/verify', {
+        method: 'POST',
+        body: JSON.stringify({ token })
+      });
+      if (data && data.user) {
+        setUser(data.user);
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      throw new Error(err.message || 'Failed to verify magic link');
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, checkAuth }}>
+    <AuthContext.Provider value={{ 
+      user, login, register, logout, loading, checkAuth,
+      forgotPassword, resetPassword, requestMagicLink, verifyMagicLink 
+    }}>
       {children}
     </AuthContext.Provider>
   );

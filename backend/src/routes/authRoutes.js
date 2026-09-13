@@ -2,7 +2,11 @@
 
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { login, logout, me, register } from '../controllers/authController.js';
+import { 
+  login, logout, me, register, 
+  googleAuthInit, googleAuthCallback, githubAuthInit, githubAuthCallback,
+  forgotPassword, resetPassword, requestMagicLink, verifyMagicLink
+} from '../controllers/authController.js';
 import { requireAuth } from '../middlewares/authMiddleware.js';
 
 const authLimiter = rateLimit({
@@ -97,5 +101,16 @@ router.post('/logout', requireAuth, logout);
  *         description: Returns user data
  */
 router.get('/me', requireAuth, me);
+
+router.get('/google', googleAuthInit);
+router.get('/google/callback', googleAuthCallback);
+router.get('/github', githubAuthInit);
+router.get('/github/callback', githubAuthCallback);
+
+router.post('/forgot-password', authLimiter, forgotPassword);
+router.post('/reset-password', authLimiter, resetPassword);
+
+router.post('/magic-link', authLimiter, requestMagicLink);
+router.post('/magic-link/verify', authLimiter, verifyMagicLink);
 
 export default router;

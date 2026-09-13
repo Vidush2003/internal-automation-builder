@@ -7,6 +7,13 @@ import WorkflowEditor from './pages/WorkflowEditor';
 import Logs from './pages/Logs';
 import Landing from './pages/Landing';
 import AppViewer from './pages/AppViewer';
+import ResumeAnalyzer from './pages/ResumeAnalyzer';
+import Integrations from './pages/Integrations';
+import Templates from './pages/Templates';
+import Settings from './pages/Settings';
+import Help from './pages/Help';
+import ResetPassword from './pages/ResetPassword';
+import MagicLogin from './pages/MagicLogin';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { OverlayProvider } from './components/Overlays';
@@ -59,6 +66,33 @@ function AppContent() {
             <AppViewer />
           </ProtectedRoute>
         } />
+        <Route path="/resume-analyzer" element={
+          <ProtectedRoute>
+            <ResumeAnalyzer />
+          </ProtectedRoute>
+        } />
+        <Route path="/integrations" element={
+          <ProtectedRoute>
+            <Integrations />
+          </ProtectedRoute>
+        } />
+        <Route path="/templates" element={
+          <ProtectedRoute>
+            <Templates />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
+        <Route path="/help" element={
+          <ProtectedRoute>
+            <Help />
+          </ProtectedRoute>
+        } />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/magic-login" element={<MagicLogin />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AnimatePresence>

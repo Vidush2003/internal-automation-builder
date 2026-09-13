@@ -26,9 +26,18 @@ const userSchema = new mongoose.Schema(
 
     passwordHash: {
       type: String,
-      required: [true, 'Password hash is required'],
+      required: false,
       select: false,
     },
+
+    googleId: { type: String, sparse: true, index: true },
+    githubId: { type: String, sparse: true, index: true },
+    
+    resetPasswordToken: { type: String, select: false },
+    resetPasswordExpire: { type: Date, select: false },
+    
+    magicLinkToken: { type: String, select: false },
+    magicLinkExpire: { type: Date, select: false },
 
     role: {
       type: String,
@@ -64,7 +73,7 @@ const userSchema = new mongoose.Schema(
 
 
 userSchema.pre('save', async function savePassword() {
-  if (!this.isModified('passwordHash')) {
+  if (!this.isModified('passwordHash') || !this.passwordHash) {
     return;
   }
   const saltRounds = 12;
@@ -72,6 +81,7 @@ userSchema.pre('save', async function savePassword() {
 });
 
 userSchema.methods.comparePassword = async function comparePassword(candidatePassword) {
+  if (!this.passwordHash) return false;
   return bcrypt.compare(candidatePassword, this.passwordHash);
 };
 
