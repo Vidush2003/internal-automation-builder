@@ -71,7 +71,8 @@ export default function AuthModal({ isOpen, onClose, defaultMode = 'login' }) {
   };
 
   const handleOAuth = (provider) => {
-    window.location.href = `http://localhost:5000/api/auth/${provider}`;
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    window.location.href = `${baseUrl}/auth/${provider}`;
   };
 
   const inputCls = 'w-full rounded-xl py-3.5 px-4 text-[15px] outline-none transition-all bg-black/[0.03] dark:bg-white/[0.04] border border-black/10 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-[#ff4a00]/70 focus:bg-white dark:focus:bg-black/50 focus:ring-4 focus:ring-[#ff4a00]/15';
