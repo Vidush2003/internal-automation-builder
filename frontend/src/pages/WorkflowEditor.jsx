@@ -36,6 +36,7 @@ const NODE_DEF = {
   ACTION_DISCORD:      { icon: 'forum',           label: 'Discord Message',chip: 'Integration', shape: 'rect',         gradientFrom: '#5865F2', gradientTo: '#404EED' },
   LOGIC_DELAY:         { icon: 'hourglass_empty', label: 'Delay',          chip: 'Logic',       shape: 'stadium',      gradientFrom: '#f59e0b', gradientTo: '#d97706' },
   LOGIC_LOOP:          { icon: 'repeat',          label: 'For Each',       chip: 'Logic',       shape: 'parallelogram',gradientFrom: '#10b981', gradientTo: '#059669', handles: [{ id: 'loop', color: '#10b981', bottom: -7, left: '40%', position: 'bottom' }, { id: 'done', color: '#6b7280' }] },
+  ACTION_PARSE_RESUME: { icon: 'description',     label: 'Parse Resume',   chip: 'AI Action',   shape: 'hexagon',      gradientFrom: '#b45309', gradientTo: '#d97706' },
 };
 
 const PALETTE_ITEMS = [
@@ -49,6 +50,7 @@ const PALETTE_ITEMS = [
   { type: 'ACTION_AI_SUMMARIZE', title: 'AI Summarize',   desc: 'Summarize text with Gemini',      icon: 'auto_awesome' },
   { type: 'ACTION_AI_EXTRACT',   title: 'AI Extract',     desc: 'Extract structured JSON',         icon: 'troubleshoot' },
   { type: 'ACTION_AI_DECIDE',    title: 'AI Decide',      desc: 'Semantic True/False routing',     icon: 'psychology' },
+  { type: 'ACTION_PARSE_RESUME', title: 'Parse Resume',   desc: 'Extract candidate data from PDF',  icon: 'description' },
 ];
 
 // Trigger types users can swap to from the palette (replaces the default manual trigger)
@@ -219,6 +221,19 @@ const NODE_ICON_SVG = {
       <path d="M17 8 L20 12 L23 8" stroke="white" strokeWidth="2" strokeLinejoin="round" fill="white" opacity="0.9"/>
     </svg>
   ),
+  // Parse Resume: document with sparkle
+  ACTION_PARSE_RESUME: () => (
+    <svg viewBox="0 0 40 40" width="40" height="40" fill="none">
+      <rect width="40" height="40" rx="10" fill="url(#gPR)"/>
+      <defs><linearGradient id="gPR" x1="0" y1="0" x2="40" y2="40"><stop offset="0%" stopColor="#f59e0b"/><stop offset="100%" stopColor="#92400e"/></linearGradient></defs>
+      <rect x="10" y="8" width="16" height="22" rx="2" stroke="white" strokeWidth="2" fill="none" opacity="0.9"/>
+      <line x1="13" y1="14" x2="23" y2="14" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.8"/>
+      <line x1="13" y1="18" x2="23" y2="18" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.8"/>
+      <line x1="13" y1="22" x2="19" y2="22" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.8"/>
+      <path d="M28 22 L29.5 26 L28 24.5 L26.5 26 Z" fill="white" opacity="0.95"/>
+      <circle cx="28" cy="18" r="2" fill="white" opacity="0.7"/>
+    </svg>
+  ),
 };
 
 function NodeIcon({ type }) {
@@ -247,6 +262,7 @@ function AutomationNode({ data, id, selected }) {
     ACTION_AI_SUMMARIZE: data.text             ? `${data.length || 'medium'} summary`  : 'No text',
     ACTION_AI_EXTRACT:   data.extractionSchema ? 'Schema configured'                   : 'No schema',
     ACTION_AI_DECIDE:    data.criteria         ? data.criteria.slice(0, 32)            : 'No criteria',
+    ACTION_PARSE_RESUME: data.pdfUrl           ? data.pdfUrl.slice(0, 38)             : 'No PDF URL set',
     TRIGGER_WEBHOOK:     'External webhook POST',
     TRIGGER_CRON:        data.cron             ? data.cron                             : 'No schedule',
     TRIGGER_MANUAL:      'Starts manually',
@@ -573,6 +589,7 @@ function NodeInspector({ node, workflow, onUpdate, onDelete }) {
   const isDiscord    = node.data.type === 'ACTION_DISCORD';
   const isDelay      = node.data.type === 'LOGIC_DELAY';
   const isLoop       = node.data.type === 'LOGIC_LOOP';
+  const isParseResume = node.data.type === 'ACTION_PARSE_RESUME';
 
   const webhookUrl = workflow ? `${window.location.origin}/api/webhooks/${workflow._id || 'save-to-generate'}` : '';
 
@@ -854,6 +871,33 @@ function NodeInspector({ node, workflow, onUpdate, onDelete }) {
           <div className="rounded-xl bg-gray-50 dark:bg-[#12121a] border border-gray-200 dark:border-white/10 p-3 text-[10px] text-gray-500 dark:text-gray-400 leading-relaxed">
             <strong className="text-emerald-600">↓ loop</strong> handle → connect to nodes that run for each item.<br />
             <strong className="text-gray-500">→ done</strong> handle → connect to nodes that run after all iterations.
+          </div>
+        </>
+      )}
+
+      {isParseResume && (
+        <>
+          <Field
+            label="PDF URL"
+            hint="Supports interpolation e.g. {{trigger.payload.resume_url}}. Must be a public HTTPS URL pointing to a PDF."
+          >
+            <input
+              className={`${inputCls} font-mono text-xs`}
+              type="text"
+              placeholder="https://example.com/resume.pdf"
+              value={node.data.pdfUrl || ''}
+              onChange={(e) => onUpdate('pdfUrl', e.target.value)}
+            />
+          </Field>
+          <div className="rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 p-3 text-[10px] text-amber-700 dark:text-amber-400 leading-relaxed">
+            <strong>Output fields available downstream:</strong><br />
+            <code className="font-mono">{'{{node_id.candidate.name}}'}</code><br />
+            <code className="font-mono">{'{{node_id.candidate.email}}'}</code><br />
+            <code className="font-mono">{'{{node_id.candidate.skills}}'}</code><br />
+            <code className="font-mono">{'{{node_id.candidate.experience_years}}'}</code><br />
+            <code className="font-mono">{'{{node_id.candidate.summary}}'}</code><br />
+            <code className="font-mono">{'{{node_id.candidate.scores.overall}}'}</code><br />
+            <code className="font-mono">{'{{node_id.candidate.scores.skills}}'}</code>
           </div>
         </>
       )}

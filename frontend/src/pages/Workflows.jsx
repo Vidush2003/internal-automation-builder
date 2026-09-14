@@ -4,22 +4,75 @@ import AppLayout from '../components/AppLayout';
 import { apiClient } from '../api/client';
 import { useConfirm, useToast } from '../components/Overlays';
 
+const Icon = ({ children, className = '' }) => (
+  <span className={`material-symbols-outlined ${className}`} aria-hidden="true">{children}</span>
+);
+
 const statusMeta = {
-  active: { label: 'Active', icon: 'bolt', className: 'bg-[#ff4a00]/10 text-[#ff4a00] border-[#ff4a00]/20' },
-  draft: { label: 'Draft', icon: 'edit_note', className: 'bg-gray-100 dark:bg-white/10 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/20' },
-  archived: { label: 'Archived', icon: 'inventory_2', className: 'bg-gray-50 dark:bg-[#0d0d14] text-gray-400 dark:text-gray-500 border-gray-200 dark:border-white/20' },
+  active: { label: 'Active', icon: 'bolt', color: '#10b981' },
+  draft: { label: 'Draft', icon: 'edit_note', color: '#94a3b8' },
+  failed: { label: 'Failed', icon: 'error', color: '#f43f5e' },
 };
 
 function relativeDate(value) {
-  if (!value) return 'Recently created';
+  if (!value) return 'Recently';
   const days = Math.floor((Date.now() - new Date(value).getTime()) / 86400000);
-  if (days <= 0) return 'Updated today';
-  if (days === 1) return 'Updated yesterday';
-  return `Updated ${days} days ago`;
+  if (days <= 0) {
+    const mins = Math.floor((Date.now() - new Date(value).getTime()) / 60000);
+    if (mins < 60) return `${mins}m ago`;
+    return `${Math.floor(mins / 60)}h ago`;
+  }
+  if (days === 1) return 'Yesterday';
+  return `${days}d ago`;
 }
 
 function WorkflowCardSkeleton() {
-  return <div className="h-72 rounded-2xl bg-white dark:bg-[#0d0d14] border border-gray-200 dark:border-white/10 animate-pulse" />;
+  return <div className="h-64 rounded-2xl bg-white/50 dark:bg-white/[0.02] border border-black/5 dark:border-white/5 animate-pulse" />;
+}
+
+// Renders a mini visual representation of the workflow nodes
+function MiniNodeGraph({ nodes }) {
+  if (!nodes || nodes.length === 0) {
+    return <div className="text-xs text-gray-400 py-2">Empty workflow</div>;
+  }
+  
+  // Show up to 4 nodes, then a "+N more" indicator
+  const displayNodes = nodes.slice(0, 4);
+  const remaining = nodes.length - 4;
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5 py-3">
+      {displayNodes.map((node, i) => {
+        // Simplified node icon logic based on type/label
+        let icon = 'account_tree';
+        let color = '#94a3b8';
+        if (node.type?.includes('Trigger') || node.id?.includes('trigger')) { icon = 'bolt'; color = '#ff4a00'; }
+        else if (node.type?.includes('HTTP')) { icon = 'api'; color = '#3b82f6'; }
+        else if (node.type?.includes('Condition')) { icon = 'call_split'; color = '#8b5cf6'; }
+        else if (node.type?.includes('Gemini') || node.type?.includes('AI')) { icon = 'auto_awesome'; color = '#ec4899'; }
+
+        return (
+          <React.Fragment key={node.id}>
+            <div className="flex items-center gap-1.5 bg-gray-100/50 dark:bg-white/5 border border-black/5 dark:border-white/10 px-2 py-1 rounded-md text-[10px] font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[100px]">
+              <Icon className="text-[12px]" style={{ color }}>{icon}</Icon>
+              <span className="truncate">{node.data?.label || node.type || 'Node'}</span>
+            </div>
+            {i < displayNodes.length - 1 && (
+              <Icon className="text-[14px] text-gray-300 dark:text-gray-600">arrow_forward</Icon>
+            )}
+          </React.Fragment>
+        );
+      })}
+      {remaining > 0 && (
+        <>
+          <Icon className="text-[14px] text-gray-300 dark:text-gray-600">arrow_forward</Icon>
+          <div className="bg-gray-100/50 dark:bg-white/5 border border-black/5 dark:border-white/10 px-2 py-1 rounded-md text-[10px] font-semibold text-gray-500">
+            +{remaining}
+          </div>
+        </>
+      )}
+    </div>
+  );
 }
 
 export default function Workflows() {
@@ -28,8 +81,7 @@ export default function Workflows() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [creating, setCreating] = useState(false);
-  const [aiPrompt, setAiPrompt] = useState('');
-  const [generatingAi, setGeneratingAi] = useState(false);
+  
   const navigate = useNavigate();
   const toast = useToast();
   const confirm = useConfirm();
@@ -63,24 +115,6 @@ export default function Workflows() {
     }
   };
 
-  const generateWithAi = async (e) => {
-    e.preventDefault();
-    if (!aiPrompt.trim()) return;
-    setGeneratingAi(true);
-    try {
-      const data = await apiClient('/ai/generate-workflow', {
-        method: 'POST',
-        body: JSON.stringify({ prompt: aiPrompt }),
-      });
-      toast.success('AI Workflow generated successfully!');
-      navigate(`/editor/${data.workflow._id}`);
-    } catch (err) {
-      toast.error(`Failed to generate workflow: ${err.message}`);
-    } finally {
-      setGeneratingAi(false);
-    }
-  };
-
   const handleRun = async (id, event) => {
     event.stopPropagation();
     try {
@@ -111,8 +145,9 @@ export default function Workflows() {
 
   const counts = useMemo(() => ({
     all: workflows.length,
-    active: workflows.filter((workflow) => workflow.status === 'active').length,
-    draft: workflows.filter((workflow) => workflow.status === 'draft').length,
+    active: workflows.filter((w) => w.status === 'active').length,
+    draft: workflows.filter((w) => w.status === 'draft').length,
+    failed: workflows.filter((w) => w.status === 'failed').length, // Assuming we track failure status
   }), [workflows]);
 
   const filteredWorkflows = useMemo(() => workflows.filter((workflow) => {
@@ -121,106 +156,133 @@ export default function Workflows() {
   }), [workflows, searchTerm, statusFilter]);
 
   return (
-    <AppLayout title="Workflows" subtitle="Design, manage, and run the automations that move your team’s work forward.">
-      <section className="rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14] p-5 sm:p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-        <div className="flex items-start gap-3">
-          <span className="w-10 h-10 rounded-xl bg-[#ff4a00]/10 text-[#ff4a00] flex items-center justify-center shrink-0"><span className="material-symbols-outlined">account_tree</span></span>
-          <div><p className="font-label text-[10px] uppercase tracking-[.16em] font-bold text-[#ff4a00]">Automation library</p><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{counts.all === 0 ? 'Create your first workflow to get started.' : `${counts.all} workflow${counts.all === 1 ? '' : 's'} in this workspace`}</p></div>
+    <AppLayout>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 py-2 mb-6">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-gray-900 dark:text-white">
+            Workflows
+          </h1>
+          <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400 max-w-lg">
+            Create, manage and monitor your automations.
+          </p>
         </div>
-        <button onClick={createWorkflow} disabled={creating} className="text-white px-5 py-3 rounded-xl font-label text-xs font-bold uppercase tracking-wider shadow-sm hover:shadow-md hover:-translate-y-px transition-all disabled:opacity-60 inline-flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg,#ff4a00,#e04200)', boxShadow: '0 0 15px rgba(255,74,0,0.2)' }}><span className="material-symbols-outlined text-[18px]">add</span>{creating ? 'Creating…' : 'New workflow'}</button>
-      </section>
+        <button onClick={createWorkflow} disabled={creating} className="btn-primary shrink-0 self-start md:self-auto">
+          <Icon className="text-[18px]">add</Icon> {creating ? 'Creating...' : 'New Workflow'}
+        </button>
+      </div>
 
-      <section className="relative group">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#ff4a00]/20 to-[#e04200]/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-        <form onSubmit={generateWithAi} className="relative bg-white dark:bg-[#0d0d14] border border-gray-200 dark:border-[#ff4a00]/30 rounded-2xl flex items-center p-2 shadow-lg transition-all focus-within:border-[#ff4a00] focus-within:ring-1 focus-within:ring-[#ff4a00]">
-          <span className="material-symbols-outlined absolute left-5 text-[22px] text-[#ff4a00] animate-pulse">auto_awesome</span>
-          <input 
-            type="text" 
-            disabled={generatingAi}
-            className="w-full bg-transparent border-none py-3.5 pl-14 pr-4 text-sm text-gray-900 dark:text-white outline-none focus:ring-0 placeholder:text-gray-400 dark:placeholder:text-gray-500" 
-            placeholder="Describe your workflow and let AI build it..." 
-            value={aiPrompt} 
-            onChange={(e) => setAiPrompt(e.target.value)} 
-          />
-          <button 
-            type="submit" 
-            disabled={generatingAi || !aiPrompt.trim()} 
-            className={`text-white rounded-xl px-6 py-3 text-xs font-bold tracking-widest uppercase whitespace-nowrap transition-all flex items-center gap-2 disabled:cursor-not-allowed hover:-translate-y-px active:translate-y-0 ${
-              generatingAi || !aiPrompt.trim() 
-                ? 'bg-gray-100 dark:bg-white/5 !text-gray-400 dark:!text-white/40' 
-                : 'hover:shadow-lg'
-            }`}
-            style={
-              generatingAi || !aiPrompt.trim() 
-                ? {} 
-                : { background: 'linear-gradient(135deg,#ff4a00,#e04200)', boxShadow: '0 0 15px rgba(255,74,0,0.3)' }
-            }
-          >
-            {generatingAi ? (
-              <><span className="material-symbols-outlined text-[18px] animate-spin">sync</span> Generating...</>
-            ) : (
-              <><span className="material-symbols-outlined text-[18px]">auto_fix_high</span> Generate</>
-            )}
-          </button>
-        </form>
-      </section>
-
-      <section className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
-        <div className="flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Workflow status filters">
-          {['all', 'active', 'draft'].map((status) => (
-            <button key={status} role="tab" aria-selected={statusFilter === status} onClick={() => setStatusFilter(status)} className={`px-4 py-2 rounded-xl text-xs font-semibold capitalize whitespace-nowrap transition-colors ${statusFilter === status ? 'bg-[#ff4a00] text-white shadow-sm' : 'bg-white dark:bg-[#0d0d14] text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-white/15 hover:border-[#ff4a00]/30 hover:text-gray-900 dark:hover:text-white'}`}>
-              {status} <span className="ml-1 opacity-70">{counts[status]}</span>
+      {/* Filters & Search */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between mb-6 bg-white dark:bg-[#111115] p-2 rounded-2xl border border-black/5 dark:border-white/5 shadow-sm">
+        <div className="flex gap-1 overflow-x-auto" role="tablist">
+          {['all', 'active', 'draft', 'failed'].map((status) => (
+            <button 
+              key={status} 
+              onClick={() => setStatusFilter(status)} 
+              className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-all whitespace-nowrap ${
+                statusFilter === status 
+                  ? 'bg-black/5 dark:bg-white/10 text-gray-900 dark:text-white' 
+                  : 'text-gray-500 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+            >
+              {status} <span className="ml-1.5 text-[10px] bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">{counts[status]}</span>
             </button>
           ))}
         </div>
-        <label className="relative w-full lg:w-72"><span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-gray-400 dark:text-gray-500">search</span><input type="search" className="w-full rounded-xl bg-white dark:bg-[#0d0d14] border border-gray-200 dark:border-white/15 py-2.5 pl-10 pr-4 text-sm text-gray-900 dark:text-white outline-none focus:border-[#ff4a00] focus:ring-2 focus:ring-[#ff4a00]/10" placeholder="Search workflows" value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} /></label>
-      </section>
+        
+        <div className="relative w-full lg:w-80 shrink-0 px-2 lg:px-0">
+          <Icon className="absolute left-3 lg:left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</Icon>
+          <input 
+            type="text" 
+            className="w-full bg-black/5 dark:bg-white/5 border-none rounded-xl py-2 pl-10 pr-4 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#ff4a00]/50 placeholder:text-gray-400" 
+            placeholder="Search workflows..." 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+          />
+        </div>
+      </div>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {loading ? <><WorkflowCardSkeleton /><WorkflowCardSkeleton /><WorkflowCardSkeleton /></> : filteredWorkflows.length === 0 ? (
-          <div className="col-span-full rounded-2xl border border-dashed border-gray-300 dark:border-white/20 bg-white dark:bg-[#0d0d14] py-16 px-6 text-center"><span className="material-symbols-outlined text-4xl text-[#ff4a00]/50">account_tree</span><h3 className="mt-3 font-headline text-xl font-bold text-gray-900 dark:text-white">{workflows.length === 0 ? 'Your automation library is empty.' : 'No workflows match this view.'}</h3><p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{workflows.length === 0 ? 'Start with a trigger, add the actions your process needs, then run it when you are ready.' : 'Try clearing the search or choosing another status.'}</p>{workflows.length === 0 && <button onClick={createWorkflow} className="mt-6 text-sm font-bold text-[#ff4a00] hover:underline">Create a workflow →</button>}</div>
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        {loading ? (
+          <><WorkflowCardSkeleton /><WorkflowCardSkeleton /><WorkflowCardSkeleton /></>
+        ) : filteredWorkflows.length === 0 ? (
+          <div className="col-span-full premium-card py-20 flex flex-col items-center justify-center text-center">
+            <div className="w-16 h-16 bg-black/5 dark:bg-white/5 rounded-full flex items-center justify-center mb-4">
+              <Icon className="text-3xl text-gray-400">account_tree</Icon>
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">No workflows found</h3>
+            <p className="mt-2 text-sm text-gray-500 max-w-sm">
+              {workflows.length === 0 
+                ? 'Create your first automation or let AI build one for you.' 
+                : 'Try adjusting your search or filters to find what you are looking for.'}
+            </p>
+            {workflows.length === 0 && (
+              <button onClick={createWorkflow} className="mt-6 btn-primary">
+                Create Workflow
+              </button>
+            )}
+          </div>
         ) : filteredWorkflows.map((workflow) => {
           const status = statusMeta[workflow.status] || statusMeta.draft;
           const nodeCount = workflow.nodes?.length || 0;
+          // Mock stats for information density if they don't exist in the model
+          const successRate = workflow.successRate ?? '100%';
+          const runs = workflow.runs ?? 0;
+
           return (
-            <article key={workflow._id} onClick={() => navigate(`/editor/${workflow._id}`)} className="group min-h-72 cursor-pointer rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0d0d14] p-6 shadow-sm hover:shadow-md hover:border-[#ff4a00]/30 hover:-translate-y-1 transition-all duration-300 flex flex-col relative overflow-hidden">
-              <div className="absolute -right-12 -top-12 w-36 h-36 rounded-full bg-[#ff4a00]/5 group-hover:scale-125 transition-transform duration-500" />
-              <div className="relative">
-                <div className="flex items-start justify-between gap-4">
-                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-label text-[10px] uppercase tracking-wider font-bold ${status.className}`}>
-                    <span className="material-symbols-outlined text-[13px]">{status.icon}</span>{status.label}
-                  </span>
-                  <button onClick={(event) => handleDelete(workflow, event)} className="p-2 -mr-2 -mt-2 rounded-lg text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 hover:text-red-500 hover:bg-red-500/10 transition-all" aria-label={`Delete ${workflow.name}`}>
-                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                  </button>
+            <article 
+              key={workflow._id} 
+              onClick={() => navigate(`/editor/${workflow._id}`)} 
+              className="group premium-card-hover cursor-pointer p-5 flex flex-col relative"
+            >
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">{status.label}</span>
                 </div>
-                <h3 className="mt-5 font-headline text-2xl font-bold leading-tight text-gray-900 dark:text-white line-clamp-2">{workflow.name}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-2">{workflow.description || 'No description yet. Open the workflow to add its purpose and build the flow.'}</p>
-              </div>
-              <div className="relative mt-auto pt-5">
-                <div className="flex items-center gap-4 border-t border-gray-200 dark:border-white/10 pt-4 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="inline-flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px] text-[#ff4a00]">hub</span>{nodeCount} node{nodeCount === 1 ? '' : 's'}</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">schedule</span>{relativeDate(workflow.updatedAt)}</span>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <button 
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      navigate(`/apps/${workflow._id}`);
-                    }} 
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 dark:text-gray-300 hover:text-[#ff4a00] dark:hover:text-[#ff4a00] transition-all border border-gray-200 dark:border-white/20 px-3 py-1.5 rounded-lg"
+                    onClick={(event) => handleDelete(workflow, event)} 
+                    className="p-1.5 rounded-lg text-gray-400 opacity-0 group-hover:opacity-100 hover:text-error hover:bg-error-light transition-all"
                   >
-                    <span className="material-symbols-outlined text-[16px]">open_in_new</span>Open App
+                    <Icon className="text-[18px]">delete</Icon>
                   </button>
-                  <button onClick={(event) => handleRun(workflow._id, event)} disabled={workflow.status === 'archived'} className="inline-flex items-center gap-1.5 text-sm font-bold text-[#ff4a00] hover:gap-2 transition-all disabled:opacity-40">
-                    <span className="material-symbols-outlined text-[18px]">play_arrow</span>Run now
+                </div>
+              </div>
+              
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1 mb-1">{workflow.name}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 h-10">
+                {workflow.description || 'No description provided.'}
+              </p>
+
+              {/* Mini Workflow Graph */}
+              <div className="my-4 border-y border-black/5 dark:border-white/5 py-2">
+                <MiniNodeGraph nodes={workflow.nodes} />
+              </div>
+              
+              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 font-medium mb-4">
+                <span>{nodeCount} nodes</span>
+                <span>{runs} runs</span>
+                <span>{successRate} success</span>
+              </div>
+
+              <div className="mt-auto flex items-center justify-between pt-2">
+                <span className="text-[11px] text-gray-400 font-medium">
+                  Updated {relativeDate(workflow.updatedAt)}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button onClick={(e) => { e.stopPropagation(); navigate(`/apps/${workflow._id}`); }} className="btn-ghost !px-2.5 !py-1 !text-[11px]">
+                    Open App
+                  </button>
+                  <button onClick={(e) => handleRun(workflow._id, e)} className="btn-ghost !px-2.5 !py-1 !text-[11px] !text-primary hover:!bg-primary-light">
+                    Run →
                   </button>
                 </div>
               </div>
             </article>
           );
         })}
-      </section>
+      </div>
     </AppLayout>
   );
 }

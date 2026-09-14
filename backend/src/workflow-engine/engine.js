@@ -11,6 +11,7 @@ import * as Action_Slack from './nodes/Action_Slack.js';
 import * as Action_Discord from './nodes/Action_Discord.js';
 import * as Logic_Delay from './nodes/Logic_Delay.js';
 import * as Logic_Loop from './nodes/Logic_Loop.js';
+import * as Action_ParseResume from './nodes/Action_ParseResume.js';
 
 const NODE_REGISTRY = {
   'TRIGGER_MANUAL':      Trigger_Manual.execute,
@@ -26,6 +27,7 @@ const NODE_REGISTRY = {
   'ACTION_DISCORD':      Action_Discord.execute,
   'LOGIC_DELAY':         Logic_Delay.execute,
   'LOGIC_LOOP':          Logic_Loop.execute,
+  'ACTION_PARSE_RESUME': Action_ParseResume.execute,
 };
 
 /* ─── Graph utilities ─────────────────────────────────────────────────────── */

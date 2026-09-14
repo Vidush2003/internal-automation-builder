@@ -47,15 +47,28 @@ function AnalyticsTicker() {
     successRate: '—',
   });
 
-  // Use hardcoded impressive stats for the landing page ticker
-  // to avoid backend dependencies and ensure it always looks active
+  // Fetch live blended stats from the backend (which includes the baseline)
   useEffect(() => {
-    setStats({
-      totalWorkflows: "25",
-      totalExecutions: "15,000+",
-      avgExecutionSeconds: "1.12s",
-      successRate: "98.00%",
-    });
+    const loadStats = () => {
+      const url = `${import.meta.env.VITE_API_URL || '/api'}/analytics/public`;
+      fetch(url)
+        .then(r => r.json())
+        .then(d => {
+          if (!d.error && d.totalWorkflows !== undefined) {
+            setStats({
+              totalWorkflows: d.totalWorkflows.toLocaleString(),
+              totalExecutions: d.totalExecutions.toLocaleString(),
+              avgExecutionSeconds: `${d.avgExecutionSeconds}s`,
+              successRate: `${d.successRate}%`,
+            });
+          }
+        })
+        .catch(() => {});
+    };
+
+    loadStats();
+    const interval = setInterval(loadStats, 10000); // Poll every 10s for new executions
+    return () => clearInterval(interval);
   }, []);
 
   const items = [

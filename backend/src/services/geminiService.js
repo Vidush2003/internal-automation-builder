@@ -9,6 +9,9 @@ if (process.env.GEMINI_API_KEY) {
   console.warn("WARNING: GEMINI_API_KEY is not set. AI features will fail.");
 }
 
+/** Resolved once at startup. Override via GEMINI_MODEL in .env */
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+
 export const generateText = async (prompt, systemInstruction = null) => {
   if (!ai) throw new Error("Gemini API key is not configured.");
   
@@ -18,7 +21,7 @@ export const generateText = async (prompt, systemInstruction = null) => {
   }
   
   const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
+    model: GEMINI_MODEL,
     contents: prompt,
     config,
   });
@@ -41,7 +44,7 @@ export const generateStructured = async (prompt, schema, systemInstruction = nul
   }
 
   const response = await ai.models.generateContent({
-    model: 'gemini-3.6-flash',
+    model: GEMINI_MODEL,
     contents: prompt,
     config,
   });

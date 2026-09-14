@@ -14,22 +14,33 @@ export const getDashboardAnalytics = async (req, res) => {
       ? Math.round((successfulExecutions / totalExecutions) * 100) 
       : 0;
 
-    // Get executions for the last 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const { range = '7D' } = req.query;
+    const days = parseInt(range.replace('D', ''), 10) || 7;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
 
-    const executionsOverTime = await WorkflowExecution.aggregate([
-      { $match: { createdAt: { $gte: sevenDaysAgo } } },
-      { 
-        $group: { 
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+    const executionsByDate = await WorkflowExecution.aggregate([
+      { $match: { createdAt: { $gte: startDate } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
           success: { $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] } },
           failed: { $sum: { $cond: [{ $eq: ["$status", "failed"] }, 1, 0] } },
           total: { $sum: 1 }
-        } 
-      },
-      { $sort: { _id: 1 } }
+        }
+      }
     ]);
+
+    const dataMap = {};
+    executionsByDate.forEach(item => { dataMap[item._id] = item; });
+
+    const chartData = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateString = d.toISOString().split('T')[0];
+      chartData.push(dataMap[dateString] || { _id: dateString, success: 0, failed: 0, total: 0 });
+    }
 
     res.json({
       metrics: {
@@ -40,7 +51,7 @@ export const getDashboardAnalytics = async (req, res) => {
         failedExecutions,
         successRate
       },
-      chartData: executionsOverTime
+      chartData
     });
   } catch (error) {
     console.error('[Analytics] Error fetching dashboard data:', error);
@@ -50,29 +61,21 @@ export const getDashboardAnalytics = async (req, res) => {
 
 export const getPublicStats = async (req, res) => {
   try {
-    const baseWorkflows = 25;
-    const baseExecutions = 15000;
-    const baseAvgMs = 1120; // 1.12 seconds
-    const baseSuccessful = 14700; // 98% success rate
+    const totalWorkflows = await Workflow.countDocuments();
+    const totalExecutions = await WorkflowExecution.countDocuments();
 
-    const totalWorkflows = (await Workflow.countDocuments()) + baseWorkflows;
-    const totalExecutions = (await WorkflowExecution.countDocuments()) + baseExecutions;
-    
     // Compute avg execution time from durationMs
     const avgDurationResult = await WorkflowExecution.aggregate([
       { $match: { durationMs: { $ne: null } } },
       { $group: { _id: null, avg: { $avg: "$durationMs" } } }
     ]);
-    
-    const realAvgMs = avgDurationResult.length > 0 ? avgDurationResult[0].avg : 0;
-    // Blend real average with base average depending on if real records exist
-    const avgDurationMs = realAvgMs > 0 ? ((realAvgMs + baseAvgMs) / 2) : baseAvgMs;
-    const avgExecutionSeconds = (avgDurationMs / 1000).toFixed(2);
-    
-    const realSuccessful = await WorkflowExecution.countDocuments({ status: 'completed' });
-    const successfulExecutions = realSuccessful + baseSuccessful;
 
-    const successRate = totalExecutions > 0 
+    const realAvgMs = avgDurationResult.length > 0 ? avgDurationResult[0].avg : 0;
+    const avgExecutionSeconds = (realAvgMs / 1000).toFixed(2);
+
+    const successfulExecutions = await WorkflowExecution.countDocuments({ status: 'completed' });
+
+    const successRate = totalExecutions > 0
       ? ((successfulExecutions / totalExecutions) * 100).toFixed(2)
       : "100.00";
 

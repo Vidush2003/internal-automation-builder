@@ -24,7 +24,8 @@ export const generateWorkflow = asyncHandler(async (req, res) => {
               "TRIGGER_MANUAL", "TRIGGER_WEBHOOK", "TRIGGER_CRON",
               "ACTION_HTTP", "ACTION_EMAIL", "ACTION_SLACK", "ACTION_DISCORD",
               "LOGIC_BRANCH", "LOGIC_DELAY", "LOGIC_LOOP",
-              "ACTION_AI_SUMMARIZE", "ACTION_AI_EXTRACT", "ACTION_AI_DECIDE"
+              "ACTION_AI_SUMMARIZE", "ACTION_AI_EXTRACT", "ACTION_AI_DECIDE",
+              "ACTION_PARSE_RESUME"
             ] },
             data: { type: "object" },
             position: { type: "object", properties: { x: { type: "number" }, y: { type: "number" } } }

@@ -11,7 +11,11 @@ export const apiClient = async (endpoint, options = {}) => {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `Request failed with status ${response.status}`);
+    let errorMsg = errorData.error || errorData.message || `Request failed with status ${response.status}`;
+    if (errorData.details && Array.isArray(errorData.details) && errorData.details.length > 0) {
+      errorMsg = `${errorMsg}: ${errorData.details[0]}`;
+    }
+    throw new Error(errorMsg);
   }
 
   return response.json();

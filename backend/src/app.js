@@ -71,6 +71,7 @@ import logRoutes from './routes/logRoutes.js';
 import webhookRoutes from './routes/webhookRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import resumeRoutes from './routes/resumeRoutes.js';
 
 // Setup Swagger API Documentation
 setupSwagger(app);
@@ -81,6 +82,7 @@ app.use('/api/logs', logRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/resume', resumeRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).json({

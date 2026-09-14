@@ -2,35 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-background dark:bg-[#0a0a0f] text-on-background dark:text-white transition-colors duration-200;
-  font-family: 'Inter', sans-serif;
+@layer base {
+  body {
+    @apply bg-background-light dark:bg-background text-gray-900 dark:text-white transition-colors duration-200 antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  button, a, input {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  ::selection {
+    background: rgba(255, 74, 0, 0.2);
+    color: inherit;
+  }
 }
 
-button, a, input {
-  -webkit-tap-highlight-color: transparent;
+@layer components {
+  /* Premium Glass Cards */
+  .premium-card {
+    @apply bg-white/70 dark:bg-white/[0.02] backdrop-blur-2xl border border-black/5 dark:border-white/5 rounded-2xl shadow-sm dark:shadow-none transition-all duration-200;
+  }
+  
+  .premium-card-hover {
+    @apply premium-card hover:border-black/10 dark:hover:border-white/10 hover:shadow-md dark:hover:bg-white/[0.04];
+  }
+
+  /* Primary Button */
+  .btn-primary {
+    @apply flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold transition-all hover:opacity-90 active:scale-95;
+    background: linear-gradient(135deg, #ff4a00, #e04200);
+    box-shadow: 0 4px 15px rgba(255, 74, 0, 0.25);
+  }
+
+  /* Secondary/Ghost Button */
+  .btn-secondary {
+    @apply flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 border border-black/5 dark:border-white/10;
+  }
+  
+  .btn-ghost {
+    @apply flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 active:scale-95;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-bold uppercase tracking-wider border;
+  }
+  .badge-success { @apply badge bg-success-light text-success border-success/20; }
+  .badge-error { @apply badge bg-error-light text-error border-error/20; }
+  .badge-warning { @apply badge bg-warning-light text-warning border-warning/20; }
+  .badge-info { @apply badge bg-info-light text-info border-info/20; }
+  .badge-neutral { @apply badge bg-black/5 dark:bg-white/5 text-gray-600 dark:text-gray-400 border-black/10 dark:border-white/10; }
 }
 
-::selection {
-  background: theme('colors.primary-fixed');
-  color: theme('colors.on-primary-fixed');
-}
-
-.ghost-border {
-  border: 1px solid theme('colors.outline-variant');
-  opacity: 0.15;
-}
-
-.glass-panel {
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, theme('colors.primary') 0%, theme('colors.primary-container') 100%);
-  color: theme('colors.on-primary');
-}
-
+/* Animations */
 .pulse-dot {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -40,60 +65,107 @@ button, a, input {
   50% { opacity: .5; transform: scale(1.2); }
 }
 
-.animate-toast-in {
-  animation: toast-in 0.2s ease-out;
-}
-
-@keyframes toast-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* React Flow customizations for Alexandria Light Theme */
+/* React Flow customizations for Premium Theme */
 .react-flow__node {
-  background: theme('colors.surface') !important;
-  border-radius: theme('borderRadius.xl') !important;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
+}
+
+.dark .react-flow__node {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
 }
 
 .react-flow__handle {
   width: 10px !important;
   height: 10px !important;
   background: #ffffff !important;
-  border: 2px solid theme('colors.primary') !important;
+  border: 2px solid #ff4a00 !important;
   border-radius: 50% !important;
 }
 
 .react-flow__edge-path {
-  stroke: theme('colors.outline') !important;
+  stroke: #c3c6d5 !important;
   stroke-width: 2 !important;
+}
+.dark .react-flow__edge-path {
+  stroke: #434653 !important;
 }
 
 .react-flow__controls {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-  border: 1px solid theme('colors.outline-variant') !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+  border: 1px solid rgba(0,0,0,0.05) !important;
+}
+.dark .react-flow__controls {
+  border-color: rgba(255,255,255,0.1) !important;
 }
 
-/* Landing page hero: floating node cards + flowing connector lines */
-.hero-node {
-  animation: hero-float 6s ease-in-out infinite;
+/* CMDK Command Palette Styles */
+[cmdk-overlay] {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 100;
 }
 
-@keyframes hero-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+[cmdk-dialog] {
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 640px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+  overflow: hidden;
+  z-index: 101;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+.dark [cmdk-dialog] {
+  background: #0a0a0f;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
 }
 
-.hero-flow-line {
-  stroke-dasharray: 6 8;
-  animation: hero-dash 1.6s linear infinite;
+[cmdk-input] {
+  width: 100%;
+  padding: 20px 24px;
+  border: none;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  background: transparent;
+  font-size: 1.125rem;
+  color: #111;
+  outline: none;
+}
+.dark [cmdk-input] {
+  color: white;
+  border-bottom-color: rgba(255,255,255,0.1);
 }
 
-@keyframes hero-dash {
-  to { stroke-dashoffset: -28; }
+[cmdk-list] {
+  max-height: 400px;
+  overflow: auto;
+  padding: 8px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-node, .hero-flow-line, .pulse-dot {
-    animation: none !important;
-  }
+[cmdk-item] {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.1s ease;
+}
+.dark [cmdk-item] { color: #a1a1aa; }
+
+[cmdk-item][aria-selected="true"] {
+  background: rgba(255, 74, 0, 0.1);
+  color: #ff4a00;
 }
